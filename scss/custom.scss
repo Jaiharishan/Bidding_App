@@ -1,0 +1,36 @@
+$primary: #ff2b59;
+$dark: #0E1012;
+$btn-border-radius: 18px;
+$btn-border-radius-lg: 22px;
+$btn-padding-x-lg: 20px;
+$dropdown-link-hover-bg: #ff4970;
+$dropdown-link-hover-color: #ffffff;
+$input-btn-focus-width: 0;
+$input-btn-focus-box-shadow:    0 0 0;
+
+input {
+    transition: .2s;
+}
+input:focus {
+    border:2px solid $primary;
+}
+
+#form {
+    border:1px solid rgb(200, 200, 200);
+    border-radius: 1em;
+    min-width:325px;
+}
+
+.nav-left {
+    justify-content: flex-end;
+}
+
+.mx-6 {
+    margin:0 6em;
+}
+
+.item-img {
+    border-radius: .25em;
+}
+
+@import '../node_modules/bootstrap/scss/bootstrap.scss';

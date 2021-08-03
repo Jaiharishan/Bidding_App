@@ -1,0 +1,33 @@
+<div class="d-flex w-100 h-100 align-items-center justify-content-center">
+    
+
+    <form action="/user/login" method="POST" class="d-flex flex-column m-auto mt-2 w-25 py-3 px-3" id="form">
+
+        <div class="h2 mx-0 my-2 text-primary">Login</div>
+
+        <%- include('./messages.ejs') %>
+
+        <div class="mb-3 mt-2">
+          <label for="email" class="form-label">Email address</label>
+          <input type="email" class="form-control" id="email" name="email" value="<%= typeof email != 'undefined' ? email : '' %>" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" class="form-control" name="password" id="password" value="<%= typeof password != 'undefined' ? password : '' %>" required>
+        </div>
+
+        <div class="mb-2 form-check">
+          <input type="checkbox" class="form-check-input" name="check" id="check" required>
+          <label class="form-check-label" for="check">I agree that all the information are true</label>
+        </div>
+
+        <div class="my-3 text-dark lead">Don't have an account <a href="/user/register" class="text-decoration-none text-primary fw-bold">register</a></div>
+
+
+        <button type="submit" class="btn btn-primary btn-lg text-white align-self-center mt-2">
+            Login
+        </button>
+    
+      </form>
+</div>
