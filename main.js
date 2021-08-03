@@ -6,10 +6,15 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const mongoose = require('mongoose');
 
-
+const path = require('path');
+const multer = require('multer');
+const gridFsStorage = require('multer-gridfs-storage');
+const Grid = require('gridfs-stream');
+const methodOverride = require('method-override');
 
 // importing the database key
 const dbKey = require('./auth/dbkey').mongoURI;
+
 
 // setting up the database
 mongoose.connect(dbKey, {useNewUrlParser:true, useUnifiedTopology:true})

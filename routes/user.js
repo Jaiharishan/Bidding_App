@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const router = express.Router();
 
 const User = require('../modals/User').User;
-
+const Bid = require('../modals/User').Bid;
 // to use static files
 router.use(express.static('public'));
 
@@ -77,7 +77,6 @@ router.post('/register', (req, res) => {
                             newUser.save()
                                 .then(user => {
                                     // flash message should be put here
-                                    console.log(user);
 
                                     res.redirect('/user/login');
                                 })
@@ -109,7 +108,22 @@ router.post('/login', (req, res) => {
                       throw err
                     }
                     if (data) {
-                        res.render('app', {user});
+
+                        Bid.find({}, (error, bids) => {
+                            if (error) {
+                                res.send('something went wrong');
+                            }
+
+                            
+
+                            res.render('app', {
+                                user,
+                                bids
+                            })
+
+                            console.log('this rendered');
+                        })
+
                     }
                       // Send JWT
                     else {
@@ -125,9 +139,6 @@ router.post('/login', (req, res) => {
                     password,
                     check
                 })
-
-
-                
             }
             
         })

@@ -38,6 +38,10 @@ const bidSchema = new mongoose.Schema({
     owner: {
         type: 'string',
         required: true
+    },
+    bidders: {
+        type:'array',
+        required: true
     }
 })
 
@@ -46,3 +50,5 @@ const User = mongoose.model('User', userSchema);
 const Bid = mongoose.model('Bid', bidSchema);
 
 module.exports = {User, Bid};
+
+
