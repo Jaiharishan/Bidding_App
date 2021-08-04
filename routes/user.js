@@ -118,10 +118,8 @@ router.post('/login', (req, res) => {
                                 bids
                             }
                             
-
                             res.redirect('/app');
 
-                            // console.log('this rendered');
                         })
 
                     }
@@ -146,3 +144,5 @@ router.post('/login', (req, res) => {
 
 
 module.exports = router;
+
+

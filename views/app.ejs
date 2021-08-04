@@ -28,7 +28,7 @@
 
 <section class="p-5">
     <div class="container">
-        <div class="d-flex flex-wrap">
+        <div class="d-flex flex-wrap align-items-center justify-content-center">
 
             <% bids.forEach(bid => { %>
 
@@ -40,10 +40,10 @@
                         <h5 class="card-title mb-2 fw-light"><%= bid.bidname %></h5>
     
                         
-                        <div class="card-text h5 mb-3"><span id="price" class=""> &#8377 <%= bid.bidprice %></span></div>
+                        <div class="card-text h5 mb-2"><span id="price" class=""> &#8377 <%= bid.bidprice %></span></div>
     
                         <% bid.tags.forEach(tag => { %>
-                            <div class="btn btn-success py-1 px-3"><%= tag %></div>
+                            <div class="btn btn-info text-light py-1 px-3 mb-2"><%= tag %></div>
                         <% }) %>
 
     

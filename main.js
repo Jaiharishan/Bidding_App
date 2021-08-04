@@ -71,11 +71,13 @@ app.use(function(req, res, next) {
 const indexRouter = require('./routes/index');
 const userRouter = require('./routes/user');
 const appRouter = require('./routes/app');
+const dashboardRouter = require('./routes/dashboard');
 
 // using the imported routes
 app.use('/', indexRouter);
 app.use('/user', userRouter);
 app.use('/app', appRouter);
+app.use('/app/dashboard', dashboardRouter);
 
 
 const PORT = process.env.PORT || 4000;
