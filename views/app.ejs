@@ -30,7 +30,7 @@
     <div class="container">
         <div class="d-flex flex-wrap align-items-center justify-content-center">
 
-            <% bids.forEach(bid => { %>
+            <% bids.forEach((bid, index) => { %>
 
                 <div class="card my-3 mx-3" style="width: 18rem">
 
@@ -59,12 +59,12 @@
     
     
     
-                        <button type="button" class="btn btn-primary text-light w-100 mt-2" data-bs-toggle="modal" data-bs-target="#bidding">
+                        <button type="button" class="btn btn-primary text-light w-100 mt-2" data-bs-toggle="modal" data-bs-target="#bidding<%= index %>">
                             Bid now
                         </button>
                           
                           <!-- Modal -->
-                        <div class="modal fade" id="bidding" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+                        <div class="modal fade" id="bidding<%= index %>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -72,15 +72,17 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     
-                                    <form>
+                                    <form action="/app" method="POST">
                                         <div class="modal-body">
                                             <div class="mb-3">
                                                 <label for="bid-amount" class="form-label">Your bid</label>
-                                                <input type="number" class="form-control" id="bid-amount" placeholder="1000">
+                                                <input type="number" class="form-control" min="<%= bid.bidprice %>" name="bidAmount" id="bidAmount" placeholder="bid greater than <%= bid.bidprice %>">
+                                                <input type="text" value="<%= bid.bidname %>" name="itemname" style="display: none">
+                                                <input type="text" value="<%= user.username %>" name="username" style="display: none">
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-primary text-light px-4">Bid</button>
+                                            <button type="submit" class="btn btn-primary text-light px-4">Bid</button>
                                         </div>
                                     </form>
                                     
