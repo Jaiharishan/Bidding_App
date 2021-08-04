@@ -12,6 +12,7 @@ const gridFsStorage = require('multer-gridfs-storage');
 const Grid = require('gridfs-stream');
 const methodOverride = require('method-override');
 
+
 // importing the database key
 const dbKey = require('./auth/dbkey').mongoURI;
 
@@ -20,6 +21,11 @@ const dbKey = require('./auth/dbkey').mongoURI;
 mongoose.connect(dbKey, {useNewUrlParser:true, useUnifiedTopology:true})
     .then(()=> console.log('dbconnected'))
     .catch(err => console.log(err));
+
+// let gfs;
+//  conn.once('open', () => {
+//      gfs = Grid(conn.db)
+//  })
 
 
 // setting ejs and ejs layouts
@@ -30,6 +36,9 @@ app.set('view engine', 'ejs');
 // body parser
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+
+
+app.use(methodOverride('_method'));
 
 
 // to use static files like imgs css, js files
@@ -49,13 +58,24 @@ app.use(
 app.use(flash());
 
 
+app.use(function(req, res, next) {
+    // res.locals.success_msg = req.flash('success_msg');
+    // res.locals.error_msg = req.flash('error_msg');
+    // res.locals.error = req.flash('error');
+    res.locals.info = {};
+    next();
+});
+
+
 // importing routes
 const indexRouter = require('./routes/index');
 const userRouter = require('./routes/user');
+const appRouter = require('./routes/app');
 
 // using the imported routes
 app.use('/', indexRouter);
 app.use('/user', userRouter);
+app.use('/app', appRouter);
 
 
 const PORT = process.env.PORT || 4000;

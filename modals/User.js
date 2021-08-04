@@ -42,6 +42,10 @@ const bidSchema = new mongoose.Schema({
     bidders: {
         type:'array',
         required: true
+    },
+    tags: {
+        type:'array',
+        required:true
     }
 })
 

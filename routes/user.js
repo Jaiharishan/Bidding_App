@@ -98,7 +98,6 @@ router.post('/login', (req, res) => {
     // here we first get user.findone and get the hashed passwor dthen using bcrypt.compare 
     // method we compare this password and the hashed password and if it matches 
 
-
     User.findOne({email:email})
         .then(user => {
             if (user) {
@@ -114,14 +113,15 @@ router.post('/login', (req, res) => {
                                 res.send('something went wrong');
                             }
 
-                            
-
-                            res.render('app', {
+                            info = {
                                 user,
                                 bids
-                            })
+                            }
+                            
 
-                            console.log('this rendered');
+                            res.redirect('/app');
+
+                            // console.log('this rendered');
                         })
 
                     }

@@ -1,5 +1,6 @@
 $primary: #ff2b59;
 $dark: #0E1012;
+$secondary: rgb(50, 50, 50);
 $btn-border-radius: 18px;
 $btn-border-radius-lg: 22px;
 $btn-padding-x-lg: 20px;
@@ -11,6 +12,7 @@ $input-btn-focus-box-shadow:    0 0 0;
 input {
     transition: .2s;
 }
+
 input:focus {
     border:2px solid $primary;
 }
