@@ -35,4 +35,11 @@ input:focus {
     border-radius: .25em;
 }
 
+
+.info {
+    border-radius: .25em;
+    border:1px solid rgb(220, 220, 220);
+ }
+
+
 @import '../node_modules/bootstrap/scss/bootstrap.scss';

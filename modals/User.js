@@ -46,6 +46,10 @@ const bidSchema = new mongoose.Schema({
     tags: {
         type:'array',
         required:true
+    },
+    date: {
+        type:Date,
+        default: Date.now
     }
 })
 

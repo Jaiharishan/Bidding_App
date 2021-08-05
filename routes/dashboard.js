@@ -13,53 +13,48 @@ router.use(express.static('public'));
 
 // POST for create
 router.post('/create', (req, res) => {
-    const {bidname, bidprice, duration, tagsString, email} = req.body;
+    const {bidname, bidprice, duration, tagsString, username} = req.body;
 
     tags = tagsString.split(',');
 
-    User.findOne({email: email})
-        .then(user => {
-            if (user) {
-                let owner = user.username;
-                let bidders = [];
+    let owner = username;
+    let bidders = [];
 
-                Bid.findOne({bidname:bidname})
-                    .then(bidd => {
-                        if (bidd) {
-                            console.log('item already exists');
-                        }
-                        else {
-                            const newBid = new Bid({
-                                bidname,
-                                bidprice,
-                                duration,
-                                owner,
-                                tags,
-                                bidders
-                            })
+    Bid.findOne({bidname:bidname})
+        .then(bidd => {
+                    if (bidd) {
+                        console.log('item already exists');
+                    }
+                    else {
+                        const newBid = new Bid({
+                            bidname,
+                            bidprice,
+                            duration,
+                            owner,
+                            tags,
+                            bidders
+                        })
                             
-                            newBid.save()
-                                .then(bid => {console.log(bid)})
+                        newBid.save()
+                            .then(bid => {
+                                console.log(bid)
+
+                                Bid.find({}, (err, bids) => {
+                                    if (err) {
+                                        res.send('something went wrong');
+                                    }
+                            
+                                    info.bids = bids;
+                            
+                                    res.render('dashboard', info);
+                            
+                                    })
+
+                                })
                                 .catch(err => console.log(err));
 
                             
                         }
-                    })
-                    .catch(err => console.log(err));
-
-
-                Bid.find({}, (err, bids) => {
-                    if (err) {
-                        res.send('something went wrong');
-                    }
-
-                    info.user = user;
-                    info.bids = bids;
-
-                    res.render('dashboard', info);
-
-                })
-            }
         })
         .catch(err => console.log(err));
 
@@ -123,4 +118,6 @@ router.post('/update', (req, res) => {
         .catch(err => console.log(err))
 
 })
+
+
 module.exports = router;

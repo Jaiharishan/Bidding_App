@@ -31,16 +31,42 @@
         <div class="d-sm-flex flex-wrap justify-content-around">
             <div class="card py-2 px-5 m-2">
                 <div class="display-5 text-center text-primary">
-                    45
+                    <% let sold = bids.filter(bid => { %>
+                        <% if (bid.owner === user.username && bid.bidders.length > 0) { %>
+                            <% return bid.owner %>
+                        <% } %>
+                    <% }).length %>
+                    <%= sold %>
                 </div>
                 <div class="h4 text-secondary text-center mt-3 fw-light">Items sold</div>
             </div>
             <div class="card py-2 px-5 m-2">
-                <div class="display-5 text-center text-primary">62</div>
+                <div class="display-5 text-center text-primary">
+                    <% let total = 0 %>
+                    <% bids.forEach(bid => { %>
+                        <% let check = false %>
+                        <% bid.bidders.forEach(bidder => { %>
+                            <% if (bidder.username == user.username && !check) { %>
+                                <% total++ %>
+                                <% check = true %>
+                            <% } %>
+                        <% }) %>
+                    <% }) %>
+                    <%= total %>
+                </div>
                 <div class="h4 text-secondary text-center mt-3 fw-light">Total bids</div>
             </div>
             <div class="card py-2 px-5 m-2">
-                <div class="display-5 text-center text-primary">32M</div>
+                <div class="display-5 text-center text-primary">
+                    <% let revenue = 0 %>
+                    <% bids.forEach(bid => { %>
+                        <% if (bid.owner === user.username) { %>
+                            <% revenue += Number(bid.bidders[bid.bidders.length - 1].bidAmount) %>
+                        <% } %>
+                    <% }) %>
+
+                    &#8377 <%= revenue.toLocaleString() %>
+                </div>
                 <div class="h4 text-secondary text-center mt-3 fw-light">Revenue</div>
             </div>
         </div>
@@ -48,15 +74,16 @@
     </div>
 </section>
 
+
 <section class="p-5 mt-5">
     <div class="container">
         <div class="d-flex justify-content-around flex-wrap">
-            <div class="card p-2 m-2" style="width: 18rem;" data-bs-toggle="modal" data-bs-target="#createitem">
+            <div class="card p-2 m-2" style="width: 18rem" data-bs-toggle="modal" data-bs-target="#createitem">
                 <img src="imgs/sellImg.svg" alt="sell" class="img-fluid">
                 <div class="h4 text-secondary text-center mt-2 fw-light">sell item</div>
             </div>
     
-            <div class="card p-2 m-2" style="width: 18rem;">
+            <div class="card p-2 m-2" style="width: 18rem" data-bs-toggle="modal" data-bs-target="#yourbids">
                 <img src="imgs/moneyImg.svg" alt="sell" class="img-fluid">
                 <div class="h4 text-secondary text-center mt-2 fw-light">Your Bids</div>
             </div>
@@ -69,7 +96,7 @@
 <section class="p-5">
     <div class="display-6 mx-5">Your Items</div>
     <div class="container d-flex flex-wrap align-items-center justify-content-center mt-3">
-        <% bids.forEach((bid) => { %>
+        <% bids.forEach((bid, index) => { %>
 
             
             <% if (bid.owner == user.username) { %>
@@ -80,8 +107,9 @@
                     <div class="card-body">
                         <h5 class="card-title mb-2 fw-light"><%= bid.bidname %></h5>
             
+                        <p class="fw-light"> <span class="text-primary">created at</span> <%= bid.date.toLocaleString() %></p>
                         
-                        <div class="card-text h5 mb-2"><span id="price" class=""> &#8377 <%= bid.bidprice %></span></div>
+                        <div class="card-text h5 mb-2"><span id="price" class=""> &#8377 <%= Number(bid.bidprice).toLocaleString() %></span></div>
             
                         <% bid.tags.forEach(tag => { %>
                             <div class="btn btn-info text-light py-1 px-3 mb-2"><%= tag %></div>
@@ -94,12 +122,22 @@
                             <div class="d-flex align-items-center h6 fw-light"><i class="bi bi-alarm-fill mx-1"></i>duration: <span id="duration" class="mx-1"> <%= bid.duration %> d</span></div>
                         </div>
                       
-                        <div class="d-flex align-items-center h6 fw-light"><span class="iconify" data-icon="jam:crown-f" data-inline="false"></span>Highest bidder: <span id="highest-bidder" class="mx-1 text-primary fw-bold">sam</span></div>
-                        <div class="d-flex align-items-center h6 fw-light"><i class="bi bi-person-fill"></i>Item owner: <span id="owner" class="mx-1 text-primary fw-bold"><%= bid.owner %></span></div>
+                        <div class="d-flex align-items-center h6 fw-light"><span class="iconify" data-icon="jam:crown-f" data-inline="false"></span>Highest bidder:
+                            <span id="highest-bidder" class="mx-1 text-primary fw-bold">
+                               <% if (bid.bidders.length > 0) { %>
+                                   <%= bid.bidders[bid.bidders.length - 1].username %>
+                               <% }else { %>
+                                   none
+                               <% } %>
+                               
+                           </span>
+                       </div>
+
             
-            
-            
+                    
                         <div class="d-flex justify-content-around mt-3">
+
+                            <!-- to update -->
                             <form action="/app/dashboard/update" method="post" id='update'>
                                 <button type="button" class="btn btn-success text-light" data-bs-toggle="modal" data-bs-target="#U<%= bid.bidname.split(' ').join('') %>">Update</button>
                                 <input type="text" name="itemname" value="<%= bid.bidname %>" style="display: none">
@@ -141,7 +179,7 @@
                             
 
 
-
+                            <!-- to delete -->
                             <form action="/app/dashboard/delete" method="post" id='delete'>
                                 
                                 <button type="button" class="btn btn-danger text-light" data-bs-toggle="modal" data-bs-target="#D<%= bid.bidname.split(' ').join('') %>">Delete</button>
@@ -166,7 +204,31 @@
                                     </div>
                                 </div>
                             </form>
-                            
+
+
+
+                            <!-- to view bidders -->
+                            <button type="button" class="btn btn-primary text-light" data-bs-toggle="modal" data-bs-target="#bidders<%= index %>">bidders</button>
+                            <div class="modal fade" id="bidders<%= index %>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+                                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                        <h5 class="modal-title" id="staticBackdropLabel">Bidders history</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body d-flex flex-column-reverse">
+                                            <% bid.bidders.forEach(bidder => { %>
+                                                <div class="p-3 my-3 info">
+                                                    <%= bidder.username %> bidded <span class="text-primary fw-bold"><%= bidder.bidAmount %></span>
+                                                </div>
+                                            <% }) %>
+                                        </div>
+                                        <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary text-light" data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -179,7 +241,7 @@
 
 
 
-<!-- Modal -->
+<!-- modal to create -->
 <div class="modal fade" id="createitem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -205,7 +267,7 @@
                         <label for="tags" class="form-label">Tags</label>
                         <input type="text" class="form-control" id="tags" name="tagsString" placeholder="1800's, gold, royal" required>
                     </div>
-                    <input type="text" class="form-control" name="email" value="<%= user.email %>" style="display: none;">
+                    <input type="text" class="form-control" name="username" value="<%= user.username %>" style="display: none;">
 
                 </div>
                 <div class="modal-footer d-flex justify-content-around">
@@ -213,6 +275,35 @@
                     <button type="button" class="btn btn-danger text-light px-3" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </form>
+            
+        </div>
+    </div>
+</div>
+
+
+<!-- modal to your bids -->
+<div class="modal fade" id="yourbids" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Your bidding history</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <% bids.forEach(bid => { %>
+                    <% bid.bidders.forEach(bidder => { %>
+                        <% if (bidder.username == user.username) { %>
+                            <div class="p-3 my-3 info">
+                                Bidded <span class="text-primary"><%= bidder.bidAmount %></span> for <span class="text-primary"><%= bid.bidname %></span>  from <span class="text-primary"><%= bid.owner %></span> 
+                            </div>
+                        <% } %>
+                    <% }) %>
+                <% }) %>
+            </div>
+            <div class="modal-footer d-flex justify-content-around">
+
+                <button type="button" class="btn btn-primary text-light px-3" data-bs-dismiss="modal">Close</button>
+            </div>
             
         </div>
     </div>
