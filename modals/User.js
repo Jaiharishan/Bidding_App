@@ -47,9 +47,24 @@ const bidSchema = new mongoose.Schema({
         type:'array',
         required:true
     },
+    image: {
+        type: 'buffer',
+        required: true
+    },
+    imagetype: {
+        type: 'string',
+        required: true
+    },
     date: {
-        type:Date,
+        type: Date,
         default: Date.now
+    }
+})
+
+
+bidSchema.virtual('imagePath').get(() => {
+    if (this.image != null && this.imagetype != null) {
+        return `data:${this.imagetype};charset=utf-8;base64,${this.image.toString('base64')}`
     }
 })
 

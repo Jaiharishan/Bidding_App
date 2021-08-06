@@ -5,6 +5,7 @@ const User = require('../modals/User').User;
 const Bid = require('../modals/User').Bid;
 
 
+// to using static files
 router.use(express.static('public'));
 
 
@@ -23,19 +24,22 @@ router.get('/dashboard', (req, res) => {
 
 // POST router to get bids and bidders
 router.post('/', (req, res) => {
+
+    // getting the updated amount itemname and the bidder name
     const {bidAmount, itemname, username} = req.body;
-    console.log(bidAmount, itemname);
+
+    // now we search through the bid schema and find the item with itemname
     Bid.findOneAndUpdate({bidname: itemname},
+
         {
             bidprice: bidAmount,
+
+            // pushing the username and bidding amount to the existing array
             $push: {
                 bidders: {username: username, bidAmount: bidAmount}
             }
         })
         .then(bid => {
-            if(bid) {
-                console.log(bid);
-            }
             
             Bid.find({}, (err, bids) => {
                 if (err) {
@@ -51,7 +55,6 @@ router.post('/', (req, res) => {
         })
         .catch(err => console.log(err))
         
-
 })
 
 

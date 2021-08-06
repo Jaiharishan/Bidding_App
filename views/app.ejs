@@ -26,6 +26,7 @@
 
 
 
+<!-- all bidding items to public view -->
 <section class="p-5">
     <div class="container">
         <div class="d-flex flex-wrap align-items-center justify-content-center">
@@ -34,7 +35,7 @@
 
                 <div class="card my-3 mx-3" style="width: 18rem">
 
-                    <img class="m-2 mb-0 item-img" height="200px" src="https://i.pinimg.com/originals/1e/8e/83/1e8e8391f2a2bc230b00d6efb3fd92a8.jpg" class="card-img-top" alt="biditem-img">
+                    <img class="m-1 mb-0 item-img" height="200px" src="data:<%= bid.imagetype %>;charset=utf-8;base64,<%= bid.image.toString('base64') %>" class="card-img-top" alt="biditem-img">
     
                     <div class="card-body">
                         <h5 class="card-title mb-2 fw-light"><%= bid.bidname %></h5>
@@ -66,12 +67,21 @@
                             </span>
                         </div>
     
-
-                        <button type="button" class="btn btn-primary text-light w-100 mt-2" data-bs-toggle="modal" data-bs-target="#bidding<%= index %>">
-                            Bid now
-                        </button>
+                        <% let today = new Date() %>
+                        <% let auction = new Date() %>
+                        
+                        <% if (today.setDate(today.getDate() + 1) > auction.setDate(bid.date.getDate() + Number(bid.duration))) { %>
+                            <button type="button" class="btn btn-primary text-light w-100 mt-2" disabled data-bs-toggle="modal" data-bs-target="#bidding<%= index %>" <>
+                                Bidding over
+                            </button>
+                        <% }else { %>
+                            <button type="button" class="btn btn-primary text-light w-100 mt-2" data-bs-toggle="modal" data-bs-target="#bidding<%= index %>" <>
+                                bid now          
+                            </button>
+                        <% } %>
+                        
                           
-                          <!-- Modal -->
+                          <!-- bidding Modal -->
                         <div class="modal fade" id="bidding<%= index %>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -84,7 +94,7 @@
                                         <div class="modal-body">
                                             <div class="mb-3">
                                                 <label for="bid-amount" class="form-label">Your bid</label>
-                                                <input type="number" class="form-control" min="<%= bid.bidprice %>" name="bidAmount" id="bidAmount" placeholder="bid greater than <%= bid.bidprice %>">
+                                                <input type="number" class="form-control" min="<%= Number(bid.bidprice) + 1 %>" name="bidAmount" id="bidAmount" placeholder="bid greater than <%= bid.bidprice %>">
                                                 <input type="text" value="<%= bid.bidname %>" name="itemname" style="display: none">
                                                 <input type="text" value="<%= user.username %>" name="username" style="display: none">
                                             </div>

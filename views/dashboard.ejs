@@ -25,7 +25,7 @@
     </div>
 </nav>
 
-
+<!-- profile details -->
 <section class="p-5 mt-5">
     <div class="container">
         <div class="d-sm-flex flex-wrap justify-content-around">
@@ -60,7 +60,7 @@
                 <div class="display-5 text-center text-primary">
                     <% let revenue = 0 %>
                     <% bids.forEach(bid => { %>
-                        <% if (bid.owner === user.username) { %>
+                        <% if (bid.owner === user.username && bid.bidders.length > 0) { %>
                             <% revenue += Number(bid.bidders[bid.bidders.length - 1].bidAmount) %>
                         <% } %>
                     <% }) %>
@@ -75,6 +75,8 @@
 </section>
 
 
+
+<!-- buying and sellign items -->
 <section class="p-5 mt-5">
     <div class="container">
         <div class="d-flex justify-content-around flex-wrap">
@@ -93,6 +95,7 @@
 
 
 
+<!-- user items -->
 <section class="p-5">
     <div class="display-6 mx-5">Your Items</div>
     <div class="container d-flex flex-wrap align-items-center justify-content-center mt-3">
@@ -102,7 +105,7 @@
             <% if (bid.owner == user.username) { %>
                 <div class="card my-2 mx-2" style="width: 18rem">
         
-                    <img class="m-2 mb-0 item-img" height="200px" src="https://i.pinimg.com/originals/1e/8e/83/1e8e8391f2a2bc230b00d6efb3fd92a8.jpg" class="card-img-top" alt="biditem-img">
+                    <img class="m-1 mb-0 item-img" height="200px" src="data:<%= bid.imagetype %>;charset=utf-8;base64,<%= bid.image.toString('base64') %>" class="card-img-top" alt="biditem-img">
             
                     <div class="card-body">
                         <h5 class="card-title mb-2 fw-light"><%= bid.bidname %></h5>
@@ -217,11 +220,18 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body d-flex flex-column-reverse">
-                                            <% bid.bidders.forEach(bidder => { %>
-                                                <div class="p-3 my-3 info">
-                                                    <%= bidder.username %> bidded <span class="text-primary fw-bold"><%= bidder.bidAmount %></span>
+                                            <% if (bid.bidders.length > 0) { %>
+                                                <% bid.bidders.forEach(bidder => { %>
+                                                    <div class="p-3 my-3 info">
+                                                        <%= bidder.username %> bidded <span class="text-primary fw-bold"><%= bidder.bidAmount %></span>
+                                                    </div>
+                                                <% }) %>
+                                            <% }else { %>
+                                                <div class="p-3 my-3 h4 text-center">
+                                                    This item has no bidders
                                                 </div>
-                                            <% }) %>
+                                            <% } %>
+                                            
                                         </div>
                                         <div class="modal-footer">
                                         <button type="button" class="btn btn-primary text-light" data-bs-dismiss="modal">Close</button>
@@ -267,6 +277,11 @@
                         <label for="tags" class="form-label">Tags</label>
                         <input type="text" class="form-control" id="tags" name="tagsString" placeholder="1800's, gold, royal" required>
                     </div>
+
+                    <label for="image" class="mt-2">Item image</label>
+                    <input type="file" class="filepond" name="image" id="image">
+
+
                     <input type="text" class="form-control" name="username" value="<%= user.username %>" style="display: none;">
 
                 </div>
@@ -290,6 +305,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
+                
                 <% bids.forEach(bid => { %>
                     <% bid.bidders.forEach(bidder => { %>
                         <% if (bidder.username == user.username) { %>
