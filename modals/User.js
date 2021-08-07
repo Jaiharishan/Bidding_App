@@ -62,13 +62,6 @@ const bidSchema = new mongoose.Schema({
 })
 
 
-bidSchema.virtual('imagePath').get(() => {
-    if (this.image != null && this.imagetype != null) {
-        return `data:${this.imagetype};charset=utf-8;base64,${this.image.toString('base64')}`
-    }
-})
-
-
 const User = mongoose.model('User', userSchema);
 const Bid = mongoose.model('Bid', bidSchema);
 

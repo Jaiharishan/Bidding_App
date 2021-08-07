@@ -11,13 +11,14 @@ router.use(express.static('public'));
 
 // GET request for app route (public page)
 router.get('/', (req, res) => {
-    res.render('app', info);
+    console.log(req.session.info);
+    res.render('app', req.session.info);
 })
 
 
 // GET request for user profile
 router.get('/dashboard', (req, res) => {
-    res.render('dashboard', info);
+    res.render('dashboard', req.session.info);
 })
 
 
@@ -46,9 +47,9 @@ router.post('/', (req, res) => {
                     res.status('404').send('something went wrong');
                 }
 
-                info.bids = bids;
+                req.session.info.bids = bids
 
-                res.render('app', info);
+                res.render('app', req.session.info);
 
             })
 

@@ -5,7 +5,7 @@ const expressLayouts = require('express-ejs-layouts');
 const session = require('express-session');
 const flash = require('connect-flash');
 const mongoose = require('mongoose');
-
+const MongoStore = require('connect-mongo')
 
 // importing the database key
 const dbKey = require('./auth/dbkey').mongoURI;
@@ -32,12 +32,17 @@ app.use(express.urlencoded({limit: '50mb', extended: false}));
 app.use(express.static('public'));
 
 
+
 // Express session
 app.use(
     session({
         secret: 'secret',
         resave: true,
-        saveUninitialized: true
+        saveUninitialized: true,
+        store: MongoStore.create({mongoUrl: dbKey}),
+        cookie: {
+            maxAge: 1000 * 60 * 60 * 24
+        }
     })
 );
 
@@ -47,7 +52,6 @@ app.use(flash());
 
 app.use(function(req, res, next) {
     res.locals.success_msg = req.flash('success_msg');
-    res.locals.info = {};
     next();
 });
 

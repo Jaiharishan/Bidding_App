@@ -158,7 +158,7 @@ router.post('/login', (req, res) => {
                                 res.send('something went wrong');
                             }
 
-                            info = {
+                            req.session.info = {
                                 user,
                                 bids
                             }
@@ -172,6 +172,7 @@ router.post('/login', (req, res) => {
                     else {
 
                         errors.push({msg:'password does not match'})
+
                         res.render('login', {
                             errors,
                             email,
@@ -186,6 +187,7 @@ router.post('/login', (req, res) => {
             // the user not registered
             else {
                 errors.push({msg:'user not registered'})
+
                 res.render('login', {
                     errors,
                     email,

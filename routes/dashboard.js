@@ -56,9 +56,9 @@ router.post('/create', (req, res) => {
                                 res.send('something went wrong');
                             }
                             
-                            info.bids = bids;
+                            req.session.info.bids = bids;
                             
-                            res.render('dashboard', info);
+                            res.render('dashboard', req.session.info);
                             
                             })
 
@@ -99,9 +99,9 @@ router.post('/delete', (req, res) => {
                     res.status('404').send('something went wrong');
                 }
 
-                info.bids = bids
+                req.session.info.bids = bids
 
-                res.render('dashboard', info);
+                res.render('dashboard', req.session.info);
 
             })
         })
@@ -134,9 +134,9 @@ router.post('/update', (req, res) => {
                     res.status('404').send('something went wrong');
                 }
 
-                info.bids = bids
+                req.session.info.bids = bids
 
-                res.render('dashboard', info);
+                res.render('dashboard', req.session.info);
 
             })
 
