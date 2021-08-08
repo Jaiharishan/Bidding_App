@@ -1,22 +1,30 @@
 <nav class="navbar navbar-expand-md navbar-light bg-primary px-2">
     <div class="container-fluid">
+    
       <a class="navbar-brand text-light" href="/app">BiddingApp</a>
 
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav-contents">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse nav-left" id="navbarNavDropdown">
-        <ul class="navbar-nav">
 
+      <div class="collapse navbar-collapse nav-left" id="nav-contents">
+        <ul class="navbar-nav d-flex align-items-center">
 
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown">
+            <li class="nav-item">
+                <a class="nav-link text-light" href="#">
                     <%= user.username %>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-lg-end py-1">
-                    <li><a class="dropdown-item" href="/app/dashboard">Dashboard</a></li>
-                    <li><a class="dropdown-item" href="/user/login">Logout</a></li>
-                </ul>
+            </li>
+
+            <li class="nav-item">
+                <form action="/app/dashboard" method="POST">
+                    <button type="submit" class="dropdown-item text-light">dashboard</button>
+                </form>
+            </li>
+            <li class="nav-item">
+                <form action="/app/logout" method="POST">
+                    <button type="submit" class="dropdown-item text-light">Logout</button>
+                </form>
             </li>
         </ul>
       </div>
@@ -97,7 +105,7 @@
 
 
 <!-- user items -->
-<section class="p-5">
+<section class="px-sm-5 py-5">
     <div class="display-6 mx-5">Your Items</div>
     <div class="container d-flex flex-wrap align-items-center justify-content-center mt-3">
         <% bids.forEach((bid, index) => { %>
@@ -143,10 +151,10 @@
 
                             <!-- to update -->
                             <form action="/app/dashboard/update" method="post" id='update'>
-                                <button type="button" class="btn btn-success text-light" data-bs-toggle="modal" data-bs-target="#U<%= bid.bidname.split(' ').join('') %>">Update</button>
+                                <button type="button" class="btn btn-success text-light" data-bs-toggle="modal" data-bs-target="#Update<%=index%>">Update</button>
                                 <input type="text" name="itemname" value="<%= bid.bidname %>" style="display: none">
 
-                                <div class="modal fade" id="U<%= bid.bidname.split(' ').join('') %>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+                                <div class="modal fade" id="Update<%=index%>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
                                     <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -186,11 +194,11 @@
                             <!-- to delete -->
                             <form action="/app/dashboard/delete" method="post" id='delete'>
                                 
-                                <button type="button" class="btn btn-danger text-light" data-bs-toggle="modal" data-bs-target="#D<%= bid.bidname.split(' ').join('') %>">Delete</button>
+                                <button type="button" class="btn btn-danger text-light" data-bs-toggle="modal" data-bs-target="#Delete<%=index%>">Delete</button>
                                 <input type="text" name="itemname" value="<%= bid.bidname %>" style="display: none">
 
 
-                                <div class="modal fade" id="D<%= bid.bidname.split(' ').join('') %>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+                                <div class="modal fade" id="Delete<%=index%>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
                                     <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -201,7 +209,7 @@
                                             Once an item is deleted it is permently deleted. Make sure you remember that.
                                         </div>
                                         <div class="modal-footer">
-                                        <button type="submit" class="btn btn-primary text-light">Understood</button>
+                                        <button type="submit" class="btn btn-primary text-light">Delete</button>
                                         <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
                                         </div>
                                     </div>

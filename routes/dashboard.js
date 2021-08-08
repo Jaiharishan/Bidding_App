@@ -56,11 +56,13 @@ router.post('/create', (req, res) => {
                                 res.send('something went wrong');
                             }
                             
-                            req.session.info.bids = bids;
-                            
-                            res.render('dashboard', req.session.info);
-                            
+                            let user = req.session.info.user
+                            res.render('dashboard', {
+                                user: user,
+                                bids: bids
                             })
+                            
+                        })
 
                     })
                     .catch(err => console.log(err));
@@ -99,9 +101,11 @@ router.post('/delete', (req, res) => {
                     res.status('404').send('something went wrong');
                 }
 
-                req.session.info.bids = bids
-
-                res.render('dashboard', req.session.info);
+                let user = req.session.info.user
+                res.render('dashboard', {
+                    user: user,
+                    bids: bids
+                })
 
             })
         })
@@ -119,36 +123,52 @@ router.post('/update', (req, res) => {
 
     tags = tagsString.split(',')
 
-    // using itemname we find the required item nd update it with the given details
+
     Bid.findOneAndUpdate({bidname: itemname},
 
         {
-            bidprice: bidprice,
-            duration: duration,
+            bidname,
+            bidprice,
+            duration,
             tags: tags,
         })
         .then(bid => {
-            
+                    
             Bid.find({}, (err, bids) => {
                 if (err) {
                     res.status('404').send('something went wrong');
                 }
-
-                req.session.info.bids = bids
-
-                res.render('dashboard', req.session.info);
-
+        
+                let user = req.session.info.user
+                res.render('dashboard', {
+                    user: user,
+                    bids: bids
+                })
+        
             })
-
+        
         })
         .catch(err => console.log(err))
+
+    // using itemname we find the required item nd update it with the given details
+    
 
 })
 
 
-
+// POST request for logout
 router.post('/', (req, res) => {
-    res.render('dashboard', req.session.info);
+    Bid.find({}, (error, bids) => {
+        if (error) {
+            res.send('something went wrong')
+        }
+        console.log('this line happened', req.session);
+        let user = req.session.info.user;
+        res.render('dashboard', {
+            user: user,
+            bids: bids
+            })
+    })
 })
 
 

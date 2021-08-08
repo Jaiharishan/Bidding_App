@@ -140,7 +140,7 @@ router.post('/login', (req, res) => {
 
     // to store errors
     let errors = [];
-    let auth = false
+
 
     User.findOne({email:email})
         .then(user => {
@@ -161,11 +161,9 @@ router.post('/login', (req, res) => {
                                 res.send('something went wrong');
                             }
 
-                            auth = true;
                             req.session.auth = true;
                             req.session.info = {
                                 user: user,
-                                bids: bids
                             }
                             
                             res.redirect('/app');

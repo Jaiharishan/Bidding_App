@@ -10,7 +10,7 @@ router.use(express.static('public'));
 
 // GET requests
 router.get('/', (req, res) => {
-    res.render('register');
+    res.render('login');
 })
 
 

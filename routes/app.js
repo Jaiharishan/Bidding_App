@@ -23,16 +23,34 @@ const isAuth = (req, res, next) => {
 
 // GET request for app route (public page)
 router.get('/', isAuth, (req, res) => {
-
-    console.log(req.session.info.user);
-    res.render('app', req.session.info);
+    Bid.find({}, (error, bids) => {
+        if (error) {
+            res.send('something went wrong')
+        }
+        console.log(req.session)
+        let user = req.session.info.user
+        res.render('app', {
+            user: user,
+            bids: bids
+            })
+    })
 })
 
 
 // GET request for user profile
 router.get('/dashboard', isAuth, (req, res) => {
 
-    res.render('dashboard', req.session.info);
+    Bid.find({}, (error, bids) => {
+        if (error) {
+            res.send('something went wrong')
+        }
+        console.log('this line happened', req.session)
+        let user = req.session.info.user
+        res.render('dashboard', {
+            user: user,
+            bids: bids
+            })
+    })
 })
 
 
@@ -60,9 +78,12 @@ router.post('/', (req, res) => {
                     res.status('404').send('something went wrong');
                 }
 
-                req.session.info.bids = bids
+                let user = req.session.info.user
 
-                res.render('app', req.session.info);
+                res.render('app', {
+                    user,
+                    bids
+                });
 
             })
 
@@ -73,10 +94,10 @@ router.post('/', (req, res) => {
 
 
 router.post('/logout', (req, res) => {
-    
     req.session.destroy((err) => {
         if (err) throw err;
-        console.log('logged out')
+        console.log('logged out');
+        
         res.redirect('/user/login');
     })
 })
