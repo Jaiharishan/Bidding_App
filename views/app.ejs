@@ -1,5 +1,6 @@
 <nav class="navbar navbar-expand-md navbar-light bg-primary px-2">
     <div class="container-fluid">
+    
       <a class="navbar-brand text-light" href="/app">BiddingApp</a>
 
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown">
@@ -13,8 +14,17 @@
                     <%= user.username %>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-lg-end py-1">
-                    <li><a class="dropdown-item" href="/app/dashboard">Dashboard</a></li>
-                    <li><a class="dropdown-item" href="/user/login">Logout</a></li>
+                    <li>
+                        <form action="/app/dashboard" method="POST">
+                            <button type="submit" class="dropdown-item">dashboard</button>
+                        </form>
+                    </li>
+                    
+                    <li>
+                        <form action="/app/logout" method="POST">
+                            <button type="submit" class="dropdown-item">Logout</button>
+                        </form>
+                    </li>
                 </ul>
             </li>
         </ul>
@@ -37,9 +47,14 @@
 
                     <img class="m-1 mb-0 item-img" height="200px" src="data:<%= bid.imagetype %>;charset=utf-8;base64,<%= bid.image.toString('base64') %>" class="card-img-top" alt="biditem-img">
     
+                    
+                    
                     <div class="card-body">
                         <h5 class="card-title mb-2 fw-light"><%= bid.bidname %></h5>
-                        <p class="fw-light"> <span class="text-primary"><%= bid.owner %></span> <%= bid.date.toLocaleString() %></p>
+                        <p class="fw-light"> <span class="text-primary"><%= bid.owner %></span>
+                            <% let biddate = new Date(bid.date) %>
+                            <%= biddate.toLocaleString() %>
+                        </p>
     
                         
                         <div class="card-text h5 mb-2"><span id="price" class=""> &#8377 <%= Number(bid.bidprice).toLocaleString() %> </span></div>
@@ -70,7 +85,8 @@
                         <% let today = new Date() %>
                         <% let auction = new Date() %>
                         
-                        <% if (today.setDate(today.getDate() + 1) > auction.setDate(bid.date.getDate() + Number(bid.duration))) { %>
+                        
+                        <% if (today.setDate(today.getDate() + 1) > auction.setDate(biddate.getDate() + Number(bid.duration))) { %>
                             <button type="button" class="btn btn-primary text-light w-100 mt-2" disabled data-bs-toggle="modal" data-bs-target="#bidding<%= index %>" <>
                                 Bidding over
                             </button>

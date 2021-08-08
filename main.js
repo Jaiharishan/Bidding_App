@@ -5,7 +5,7 @@ const expressLayouts = require('express-ejs-layouts');
 const session = require('express-session');
 const flash = require('connect-flash');
 const mongoose = require('mongoose');
-const MongoStore = require('connect-mongo')
+const mongoDBSession = require('connect-mongodb-session')(session)
 
 // importing the database key
 const dbKey = require('./auth/dbkey').mongoURI;
@@ -22,15 +22,20 @@ app.use(expressLayouts);
 app.set('view engine', 'ejs');
 
 
+
 // body parser
 app.use(express.json());
 app.use(express.urlencoded({limit: '50mb', extended: false}));
 
 
-
 // to use static files like imgs css, js files
 app.use(express.static('public'));
 
+
+const store = new mongoDBSession({
+    uri: require('./auth/dbkey').mongoURI,
+    collection: 'allsessions',
+})
 
 
 // Express session
@@ -39,12 +44,15 @@ app.use(
         secret: 'secret',
         resave: true,
         saveUninitialized: true,
-        store: MongoStore.create({mongoUrl: dbKey}),
+        store: store,
         cookie: {
-            maxAge: 1000 * 60 * 60 * 24
+            maxAge: 1000 * 60 * 60 * 1,
         }
     })
 );
+
+
+
 
 // Connect flash
 app.use(flash());
@@ -61,6 +69,7 @@ const indexRouter = require('./routes/index');
 const userRouter = require('./routes/user');
 const appRouter = require('./routes/app');
 const dashboardRouter = require('./routes/dashboard');
+
 
 
 // using the imported routes

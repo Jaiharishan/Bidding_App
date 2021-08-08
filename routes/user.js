@@ -9,6 +9,7 @@ const Bid = require('../modals/User').Bid;
 // to use static files
 router.use(express.static('public'));
 
+
 // GET requests
 router.get('/register', (req, res) => {
     res.render('register');
@@ -126,6 +127,7 @@ router.post('/register', (req, res) => {
 });
 
 
+
 // POST request for login
 router.post('/login', (req, res) => {
 
@@ -138,6 +140,7 @@ router.post('/login', (req, res) => {
 
     // to store errors
     let errors = [];
+    let auth = false
 
     User.findOne({email:email})
         .then(user => {
@@ -158,9 +161,11 @@ router.post('/login', (req, res) => {
                                 res.send('something went wrong');
                             }
 
+                            auth = true;
+                            req.session.auth = true;
                             req.session.info = {
-                                user,
-                                bids
+                                user: user,
+                                bids: bids
                             }
                             
                             res.redirect('/app');

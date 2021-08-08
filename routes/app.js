@@ -9,18 +9,31 @@ const Bid = require('../modals/User').Bid;
 router.use(express.static('public'));
 
 
+const isAuth = (req, res, next) => {
+    if (req.session.auth) {
+        console.log('logged in');
+        next()
+    }else {
+        res.redirect('/user/login')
+    }
+}
+
+
+
+
 // GET request for app route (public page)
-router.get('/', (req, res) => {
-    console.log(req.session.info);
+router.get('/', isAuth, (req, res) => {
+
+    console.log(req.session.info.user);
     res.render('app', req.session.info);
 })
 
 
 // GET request for user profile
-router.get('/dashboard', (req, res) => {
+router.get('/dashboard', isAuth, (req, res) => {
+
     res.render('dashboard', req.session.info);
 })
-
 
 
 // POST router to get bids and bidders
@@ -57,6 +70,17 @@ router.post('/', (req, res) => {
         .catch(err => console.log(err))
         
 })
+
+
+router.post('/logout', (req, res) => {
+    
+    req.session.destroy((err) => {
+        if (err) throw err;
+        console.log('logged out')
+        res.redirect('/user/login');
+    })
+})
+
 
 
 module.exports = router;

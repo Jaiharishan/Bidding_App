@@ -37,12 +37,12 @@ router.post('/create', (req, res) => {
             // else create a new bid item and save it to the data base
             else {
                 const newBid = new Bid({
-                            bidname,
-                            bidprice,
-                            duration,
-                            owner,
-                            tags,
-                            bidders
+                        bidname,
+                        bidprice,
+                        duration,
+                        owner,
+                        tags,
+                        bidders
                 })
                 
                 saveImage(newBid, image)
@@ -143,6 +143,12 @@ router.post('/update', (req, res) => {
         })
         .catch(err => console.log(err))
 
+})
+
+
+
+router.post('/', (req, res) => {
+    res.render('dashboard', req.session.info);
 })
 
 
