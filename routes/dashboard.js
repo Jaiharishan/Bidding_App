@@ -15,7 +15,7 @@ router.use(express.static('public'));
 
 // POST for create
 router.post('/create', (req, res) => {
-    const {bidname, bidprice, duration, tagsString, image, username} = req.body;
+    const {bidname, bidprice, duration, tagsString, biddesc, image, username} = req.body;
 
     // to split the tags seperated by commas
     tags = tagsString.split(',');
@@ -42,6 +42,7 @@ router.post('/create', (req, res) => {
                         duration,
                         owner,
                         tags,
+                        biddesc,
                         bidders
                 })
                 

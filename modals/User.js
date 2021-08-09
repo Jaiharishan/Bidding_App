@@ -47,6 +47,10 @@ const bidSchema = new mongoose.Schema({
         type:'array',
         required:true
     },
+    biddesc: {
+        type:'string',
+        required: true
+    },
     image: {
         type: 'buffer',
         required: true
