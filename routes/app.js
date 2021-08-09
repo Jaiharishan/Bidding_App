@@ -27,8 +27,9 @@ router.get('/', isAuth, (req, res) => {
         if (error) {
             res.send('something went wrong')
         }
-        console.log(req.session)
-        let user = req.session.info.user
+
+        let user = req.session.info.user;
+
         res.render('app', {
             user: user,
             bids: bids
@@ -44,8 +45,9 @@ router.get('/dashboard', isAuth, (req, res) => {
         if (error) {
             res.send('something went wrong')
         }
-        console.log('this line happened', req.session)
-        let user = req.session.info.user
+
+        let user = req.session.info.user;
+
         res.render('dashboard', {
             user: user,
             bids: bids
@@ -94,11 +96,11 @@ router.post('/', (req, res) => {
 
 
 router.post('/logout', (req, res) => {
+    
     req.session.destroy((err) => {
         if (err) throw err;
-        console.log('logged out');
-        
         res.redirect('/user/login');
+        
     })
 })
 

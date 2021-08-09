@@ -120,36 +120,47 @@ router.post('/delete', (req, res) => {
 router.post('/update', (req, res) => {
     
     // getting all required values from the form
-    const {itemname, bidname, bidprice, duration, tagsString} = req.body;
+    const {itemname, bidname, bidprice, duration, tagsString, biddesc} = req.body;
 
     tags = tagsString.split(',')
 
 
-    Bid.findOneAndUpdate({bidname: itemname},
-
-        {
-            bidname,
-            bidprice,
-            duration,
-            tags: tags,
-        })
+    Bid.findOne({bidname: bidname})
         .then(bid => {
+            if (bid) {
+                req.flash('warning_msg', 'The item with the same name already exists');
+                res.redirect('/app/dashboard');
+            }else {
+                Bid.findOneAndUpdate({bidname: itemname},
+
+                    {
+                        bidname,
+                        bidprice,
+                        duration,
+                        tags,
+                        biddesc
+                    })
+                    .then(bidd => {
+                                
+                        Bid.find({}, (err, bids) => {
+                            if (err) {
+                                res.status('404').send('something went wrong');
+                            }
                     
-            Bid.find({}, (err, bids) => {
-                if (err) {
-                    res.status('404').send('something went wrong');
-                }
-        
-                let user = req.session.info.user
-                res.render('dashboard', {
-                    user: user,
-                    bids: bids
-                })
-        
-            })
-        
+                            let user = req.session.info.user
+                            res.render('dashboard', {
+                                user: user,
+                                bids: bids
+                            })
+                    
+                        })
+                    
+                    })
+                    .catch(err => console.log(err))
+
+            }
         })
-        .catch(err => console.log(err))
+
 
     // using itemname we find the required item nd update it with the given details
     
@@ -157,18 +168,19 @@ router.post('/update', (req, res) => {
 })
 
 
-// POST request for logout
 router.post('/', (req, res) => {
+
     Bid.find({}, (error, bids) => {
         if (error) {
             res.send('something went wrong')
         }
-        console.log('this line happened', req.session);
+
         let user = req.session.info.user;
+
         res.render('dashboard', {
             user: user,
             bids: bids
-            })
+        })
     })
 })
 

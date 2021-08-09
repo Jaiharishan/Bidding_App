@@ -42,7 +42,6 @@ router.post('/register', (req, res) => {
         errors.push({msg:'password is too short'});
     }
 
-
     // if we find any error we render the page again
     if (errors.length > 0) {
         res.render('register', {

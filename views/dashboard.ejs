@@ -34,6 +34,8 @@
 </nav>
 
 
+<%- include('../views/messages.ejs') %>
+
 <!-- profile details -->
 <section class="p-5 mt-5">
     <div class="container">
@@ -112,7 +114,7 @@
 
             
             <% if (bid.owner == user.username) { %>
-                <div class="card my-2 mx-2" style="width: 18rem" data-bs-toggle="modal" data-bs-target="#desc<%=index%>">
+                <div class="card my-2 mx-2" style="width: 18rem">
         
                     <img class="m-1 mb-0 item-img" height="200px" src="data:<%= bid.imagetype %>;charset=utf-8;base64,<%= bid.image.toString('base64') %>" class="card-img-top" alt="biditem-img">
             
@@ -156,35 +158,39 @@
 
                                 <div class="modal fade" id="Update<%=index%>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
                                     <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                        <h5 class="modal-title" id="staticBackdropLabel">Item update</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                            <h5 class="modal-title" id="staticBackdropLabel">Item update</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="col-md-6 w-100">
+                                                    <label for="bidname" class="form-label">Item name</label>
+                                                    <input type="text" class="form-control" id="bidname" name="bidname" value="<%= bid.bidname %>" required>
+                                                </div>
+                                                <div class="col-md-6 mt-2 w-100">
+                                                    <label for="bidprice" class="form-label">Item price (in INR)</label>
+                                                    <input type="number" class="form-control" id="bidprice" name="bidprice" value="<%= bid.bidprice %>" required>
+                                                </div>
+                                                <div class="col-md-6 mt-2 w-100">
+                                                    <label for="duration" class="form-label">Auction duration (in days)</label>
+                                                    <input type="number" class="form-control" id="duration" name="duration" value="<%= bid.duration %>" required>
+                                                </div>
+                                                <div class="col-md-6 w-100">
+                                                    <label for="tags" class="form-label">Tags</label>
+                                                    <input type="text" class="form-control" id="tags" name="tagsString" value="<%= bid.tags.join(',') %>" required>
+                                                </div>
+                                                <div class="col-md-6 w-100">
+                                                    <label for="biddesc" class="form-label">Description</label>
+                                                    <textarea class="form-control" id="tags" name="biddesc" value="<%= bid.biddesc %>" required></textarea>
+                                                </div>
+                            
+                                            </div>
+                                            <div class="modal-footer d-flex justify-content-around">
+                                            <button type="submit" class="btn btn-success text-light">Update</button>
+                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                                            </div>
                                         </div>
-                                        <div class="modal-body">
-                                            <div class="col-md-6">
-                                                <label for="bidname" class="form-label">Item name</label>
-                                                <input type="text" class="form-control" id="bidname" name="bidname" value="<%= bid.bidname %>" required>
-                                            </div>
-                                            <div class="col-md-6 mt-2">
-                                                <label for="bidprice" class="form-label">Item price (in INR)</label>
-                                                <input type="number" class="form-control" id="bidprice" name="bidprice" value="<%= bid.bidprice %>" required>
-                                            </div>
-                                            <div class="col-md-6 mt-2">
-                                                <label for="duration" class="form-label">Auction duration (in days)</label>
-                                                <input type="number" class="form-control" id="duration" name="duration" value="<%= bid.duration %>" required>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label for="tags" class="form-label">Tags</label>
-                                                <input type="text" class="form-control" id="tags" name="tagsString" value="<%= bid.tags.join(',') %>" required>
-                                            </div>
-                        
-                                        </div>
-                                        <div class="modal-footer d-flex justify-content-around">
-                                        <button type="submit" class="btn btn-success text-light">Update</button>
-                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                                        </div>
-                                    </div>
                                     </div>
                                 </div>
                             </form>
