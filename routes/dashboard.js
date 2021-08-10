@@ -28,12 +28,10 @@ router.post('/create', (req, res) => {
     // finding if bidding item already exists with the same name
     Bid.findOne({bidname:bidname})
         .then(bidd => {
-
-            // if exists the send a warning msg
             if (bidd) {
-                console.log('item already exists');
+                req.flash('warning_msg', 'The item with the same name already exists');
+                res.redirect('/app/dashboard');
             }
-
             // else create a new bid item and save it to the data base
             else {
                 const newBid = new Bid({
@@ -52,7 +50,6 @@ router.post('/create', (req, res) => {
                 newBid.save()
                     .then(bid => {
 
-                        console.log('create works correctly');
                         res.redirect('/app/dashboard');
 
                     })
@@ -86,7 +83,7 @@ router.post('/delete', (req, res) => {
     // now using mongodb findone and delete method we delete the item and update the page
     Bid.findOneAndDelete({bidname: itemname})
         .then(bid => {
-            console.log('working correctly');
+
             res.redirect('/app/dashboard');
             
         })
@@ -116,7 +113,7 @@ router.post('/update', (req, res) => {
                     res.redirect('/app/dashboard');
 
                 }else {
-                    
+
                     const updatedItem = {
                         bidname,
                         bidprice,
@@ -156,22 +153,6 @@ router.post('/update', (req, res) => {
 
 })
 
-
-router.post('/', (req, res) => {
-
-    Bid.find({}, (error, bids) => {
-        if (error) {
-            res.send('something went wrong')
-        }
-
-        let user = req.session.info.user;
-
-        res.render('dashboard', {
-            user: user,
-            bids: bids
-        })
-    })
-})
 
 
 module.exports = router;

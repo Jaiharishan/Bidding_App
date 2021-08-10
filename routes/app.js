@@ -11,7 +11,6 @@ router.use(express.static('public'));
 
 const isAuth = (req, res, next) => {
     if (req.session.auth) {
-        console.log('logged in');
         next()
     }else {
         res.redirect('/user/login')

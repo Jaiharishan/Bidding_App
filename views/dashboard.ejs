@@ -1,39 +1,8 @@
-<nav class="navbar navbar-expand-md navbar-light bg-primary px-2">
-    <div class="container-fluid">
-    
-      <a class="navbar-brand text-light" href="/app">BiddingApp</a>
-
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav-contents">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse nav-left" id="nav-contents">
-        <ul class="navbar-nav d-flex align-items-center">
-
-            <li class="nav-item">
-                <a class="nav-link text-light" href="#">
-                    <%= user.username %>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <form action="/app/dashboard" method="POST">
-                    <button type="submit" class="dropdown-item text-light">dashboard</button>
-                </form>
-            </li>
-            <li class="nav-item">
-                <form action="/app/logout" method="POST">
-                    <button type="submit" class="dropdown-item text-light">Logout</button>
-                </form>
-            </li>
-        </ul>
-      </div>
+<!-- for navbar -->
+<%- include('../views/navbar.ejs') %>
 
 
-    </div>
-</nav>
-
-
+<!-- for warning messages -->
 <%- include('../views/messages.ejs') %>
 
 
@@ -117,7 +86,8 @@
             <% if (bid.owner == user.username) { %>
                 <div class="card my-2 mx-2" style="width: 18rem">
         
-                    <img class="m-1 mb-0 item-img" height="200px" src="data:<%= bid.imagetype %>;charset=utf-8;base64,<%= bid.image.toString('base64') %>" class="card-img-top" alt="biditem-img">
+                    <img class="m-1 mb-0 item-img" height="200px" src="data:<%= bid.imagetype %>;charset=utf-8;base64,<%= bid.image.toString('base64') %>"
+                     class="card-img-top" alt="biditem-img" data-bs-toggle="modal" data-bs-target="#desc<%=index%>">
             
                     <div class="card-body">
                         <h5 class="card-title mb-2 fw-light"><%= bid.bidname %></h5>
@@ -329,7 +299,8 @@
 
                                 </div>
 
-                                <div class="mt-4 lead px-sm-3">
+                                <p class="h4 mt-4">Item description</p>
+                                <div class="mt-2 lead px-sm-3">
                                     <%= bid.biddesc %>
                                 </div>
                                 
