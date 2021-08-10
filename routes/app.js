@@ -23,6 +23,7 @@ const isAuth = (req, res, next) => {
 
 // GET request for app route (public page)
 router.get('/', isAuth, (req, res) => {
+
     Bid.find({}, (error, bids) => {
         if (error) {
             res.send('something went wrong')
@@ -75,19 +76,7 @@ router.post('/', (req, res) => {
         })
         .then(bid => {
             
-            Bid.find({}, (err, bids) => {
-                if (err) {
-                    res.status('404').send('something went wrong');
-                }
-
-                let user = req.session.info.user
-
-                res.render('app', {
-                    user,
-                    bids
-                });
-
-            })
+            res.redirect('/app');
 
         })
         .catch(err => console.log(err))

@@ -12,7 +12,7 @@ const dbKey = require('./auth/dbkey').mongoURI;
 
 
 // setting up the database
-mongoose.connect(dbKey, {useNewUrlParser:true, useUnifiedTopology:true})
+mongoose.connect(dbKey, {useNewUrlParser:true, useUnifiedTopology:true, useFindAndModify: false})
     .then(()=> console.log('dbconnected'))
     .catch(err => console.log(err));
 
@@ -33,7 +33,7 @@ app.use(express.static('public'));
 
 
 const store = new mongoDBSession({
-    uri: require('./auth/dbkey').mongoURI,
+    uri: dbKey,
     collection: 'allsessions',
 })
 
@@ -58,7 +58,7 @@ app.use(
 app.use(flash());
 
 
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
     res.locals.success_msg = req.flash('success_msg');
     res.locals.warning_msg = req.flash('warning_msg');
     next();

@@ -52,18 +52,8 @@ router.post('/create', (req, res) => {
                 newBid.save()
                     .then(bid => {
 
-                        Bid.find({}, (err, bids) => {
-                            if (err) {
-                                res.send('something went wrong');
-                            }
-                            
-                            let user = req.session.info.user
-                            res.render('dashboard', {
-                                user: user,
-                                bids: bids
-                            })
-                            
-                        })
+                        console.log('create works correctly');
+                        res.redirect('/app/dashboard');
 
                     })
                     .catch(err => console.log(err));
@@ -96,19 +86,9 @@ router.post('/delete', (req, res) => {
     // now using mongodb findone and delete method we delete the item and update the page
     Bid.findOneAndDelete({bidname: itemname})
         .then(bid => {
+            console.log('working correctly');
+            res.redirect('/app/dashboard');
             
-            Bid.find({}, (err, bids) => {
-                if (err) {
-                    res.status('404').send('something went wrong');
-                }
-
-                let user = req.session.info.user
-                res.render('dashboard', {
-                    user: user,
-                    bids: bids
-                })
-
-            })
         })
         .catch(err => console.log(err));
    
@@ -120,49 +100,58 @@ router.post('/delete', (req, res) => {
 router.post('/update', (req, res) => {
     
     // getting all required values from the form
-    const {itemname, bidname, bidprice, duration, tagsString, biddesc} = req.body;
+    const {itemname, bidname, bidprice, duration, tagsString, biddesc, image} = req.body;
 
     tags = tagsString.split(',')
+
+    
 
 
     Bid.findOne({bidname: bidname})
         .then(bid => {
             if (bid) {
-                req.flash('warning_msg', 'The item with the same name already exists');
-                res.redirect('/app/dashboard');
-            }else {
-                Bid.findOneAndUpdate({bidname: itemname},
 
-                    {
+                if (bid.bidname !== itemname) {
+                    req.flash('warning_msg', 'The item with the same name already exists');
+                    res.redirect('/app/dashboard');
+
+                }else {
+                    
+                    const updatedItem = {
                         bidname,
                         bidprice,
                         duration,
                         tags,
                         biddesc
-                    })
-                    .then(bidd => {
-                                
-                        Bid.find({}, (err, bids) => {
-                            if (err) {
-                                res.status('404').send('something went wrong');
-                            }
-                    
-                            let user = req.session.info.user
-                            res.render('dashboard', {
-                                user: user,
-                                bids: bids
-                            })
-                    
-                        })
-                    
-                    })
-                    .catch(err => console.log(err))
+                    }
+                    saveImage(updatedItem, image)
 
+                    Bid.findOneAndUpdate({bidname: itemname}, updatedItem).then(bidd => {
+    
+                        res.redirect('/app/dashboard')
+    
+                    }).catch(err => console.log(err));
+    
+                }
+            }else {
+
+                const updatedItem = {
+                    bidname,
+                    bidprice,
+                    duration,
+                    tags,
+                    biddesc
+                }
+                saveImage(updatedItem, image)
+
+                Bid.findOneAndUpdate({bidname: itemname}, updatedItem).then(bidd => {
+
+                    res.redirect('/app/dashboard')
+
+                }).catch(err => console.log(err));
             }
+            
         })
-
-
-    // using itemname we find the required item nd update it with the given details
     
 
 })

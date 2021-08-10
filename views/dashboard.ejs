@@ -36,6 +36,7 @@
 
 <%- include('../views/messages.ejs') %>
 
+
 <!-- profile details -->
 <section class="p-5 mt-5">
     <div class="container">
@@ -166,24 +167,29 @@
                                             <div class="modal-body">
                                                 <div class="col-md-6 w-100">
                                                     <label for="bidname" class="form-label">Item name</label>
-                                                    <input type="text" class="form-control" id="bidname" name="bidname" value="<%= bid.bidname %>" required>
+                                                    <input type="text" class="form-control" id="bidname" name="bidname" value="<%= bid.bidname %>">
                                                 </div>
                                                 <div class="col-md-6 mt-2 w-100">
                                                     <label for="bidprice" class="form-label">Item price (in INR)</label>
-                                                    <input type="number" class="form-control" id="bidprice" name="bidprice" value="<%= bid.bidprice %>" required>
+                                                    <input type="number" class="form-control" id="bidprice" name="bidprice" value="<%= bid.bidprice %>">
                                                 </div>
                                                 <div class="col-md-6 mt-2 w-100">
                                                     <label for="duration" class="form-label">Auction duration (in days)</label>
-                                                    <input type="number" class="form-control" id="duration" name="duration" value="<%= bid.duration %>" required>
+                                                    <input type="number" class="form-control" id="duration" name="duration" value="<%= bid.duration %>">
                                                 </div>
                                                 <div class="col-md-6 w-100">
                                                     <label for="tags" class="form-label">Tags</label>
-                                                    <input type="text" class="form-control" id="tags" name="tagsString" value="<%= bid.tags.join(',') %>" required>
+                                                    <input type="text" class="form-control" id="tags" name="tagsString" value="<%= bid.tags.join(',') %>">
                                                 </div>
                                                 <div class="col-md-6 w-100">
                                                     <label for="biddesc" class="form-label">Description</label>
-                                                    <textarea class="form-control" id="tags" name="biddesc" value="<%= bid.biddesc %>" required></textarea>
+                                                    <textarea class="form-control" id="biddesc" name="biddesc"><%= bid.biddesc %></textarea>
                                                 </div>
+                                                <div class="col-md-6 w-100">
+                                                    <label for="image" class="mt-2">Item image</label>
+                                                    <input type="file" class="filepond" name="image" id="image">                              
+                                                </div>
+                                                
                             
                                             </div>
                                             <div class="modal-footer d-flex justify-content-around">

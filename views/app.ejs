@@ -43,9 +43,10 @@
 
             <% bids.forEach((bid, index) => { %>
 
-                <div class="card my-3 mx-sm-3" style="width: 18rem" data-bs-toggle="modal" data-bs-target="#desc<%=index%>">
+                <div class="card my-3 mx-sm-3" style="width: 18rem">
 
-                    <img class="m-1 mb-0 item-img" height="200px" src="data:<%= bid.imagetype %>;charset=utf-8;base64,<%= bid.image.toString('base64') %>" class="card-img-top" alt="biditem-img">
+                    <img class="m-1 mb-0 item-img" height="200px" src="data:<%= bid.imagetype %>;charset=utf-8;base64,<%= bid.image.toString('base64') %>"
+                     class="card-img-top" alt="biditem-img" data-bs-toggle="modal" data-bs-target="#desc<%=index%>">
     
                     
                     
