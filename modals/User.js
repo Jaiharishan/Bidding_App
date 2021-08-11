@@ -43,6 +43,10 @@ const bidSchema = new mongoose.Schema({
         type:'array',
         required: true
     },
+    comments: {
+        type:'array',
+        required: true
+    },
     tags: {
         type:'array',
         required:true

@@ -1,6 +1,13 @@
 const express = require('express');
 const app = express();
 
+
+
+const http = require('http');
+const server = http.createServer(app);
+const io = require('socket.io')(server, {cors: {origin: "*"}})
+
+
 const expressLayouts = require('express-ejs-layouts');
 const session = require('express-session');
 const flash = require('connect-flash');
@@ -52,8 +59,6 @@ app.use(
 );
 
 
-
-
 // Connect flash
 app.use(flash());
 
@@ -65,11 +70,15 @@ app.use((req, res, next) => {
 });
 
 
+
+
+
 // importing routes
 const indexRouter = require('./routes/index');
 const userRouter = require('./routes/user');
 const appRouter = require('./routes/app');
 const dashboardRouter = require('./routes/dashboard');
+const { Bid } = require('./modals/User');
 
 
 
@@ -80,6 +89,40 @@ app.use('/app', appRouter);
 app.use('/app/dashboard', dashboardRouter);
 
 
+// websocket functionality
+io.on('connection', (socket) => {
+    console.log('user at:' , socket.id);
+    
+    socket.on('new-user', () => {
+
+        Bid.find({})
+        .then(bids => {
+            bids.forEach(bid => {
+                socket.join('R' + bid._id);
+            })
+        })
+        .catch(err => console.log(err));
+        
+    })
+    socket.on('comment', (room, data, user) => {
+        console.log(room, data);
+        // we need to store the comments in the database
+        let id = room.slice(1,)
+        Bid.findOneAndUpdate({_id:id}, {
+            $push: {
+                comments: {username: user, comment: data}
+            }
+        }).then(bid => {
+            console.log(bid.bidname);
+        }).catch(err => console.log(err));
+
+        socket.broadcast.emit('comment', room, data, user);
+    })
+    
+})
+
+
 // setting and listening to ports
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, ()=> console.log(`port is on ${PORT}`));
+const PORT = process.env.PORT || 3001;
+server.listen(PORT, ()=> console.log(`port is on ${PORT}`));
+
