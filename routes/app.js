@@ -41,12 +41,11 @@ router.get('/', isAuth, (req, res) => {
 // GET request for user profile
 router.get('/dashboard', isAuth, (req, res) => {
 
-    Bid.find({}, (error, bids) => {
+    let user = req.session.info.user;
+    Bid.find({owner: user.username}, (error, bids) => {
         if (error) {
             res.send('something went wrong')
         }
-
-        let user = req.session.info.user;
 
         res.render('dashboard', {
             user: user,
@@ -77,9 +76,94 @@ router.post('/', (req, res) => {
             
             res.redirect('/app');
 
+
         })
         .catch(err => console.log(err))
         
+})
+
+
+// GET route for searching
+router.get('/search', (req, res) => {
+
+    const {search} = req.query;
+
+    console.log(req.query);
+
+    let regex = new RegExp(search, 'i');
+
+    Bid.find({$or: [
+
+        {bidname:regex},
+
+         {tags: {$in :[regex]}}
+        ]})
+        .then(bids => {
+
+            let user = req.session.info.user;
+
+            res.render('search', {
+                search,
+                user,
+                bids
+            });
+        })
+})
+
+
+// GET route for filter
+router.get('/filter', (req, res) => {
+
+    const {alphabet, range, lowtohigh, newest} = req.query;
+    // console.log("1"+ alphabet, "2" + range, "3" + maxbid, "4" + lowtohigh, "5" + newest)
+
+
+    if(alphabet) {
+        Bid.find({bidprice: {$lt: range}}).collation({locale: "en" }).sort({bidname:1})
+            .then(bids => {
+                let user = req.session.info.user;
+                res.render('filters', {
+                    user,
+                    bids
+                })
+            })
+            .catch(err => console.log(err));
+
+        
+    }
+    if(lowtohigh) {
+        Bid.find({bidprice: {$lt: range}}).sort({bidprice:1})
+            .then(bids => {
+                let user = req.session.info.user;
+                res.render('filters', {
+                    user,
+                    bids
+                })
+
+            })
+            .catch(err => console.log(err));
+
+
+    }
+    if (newest) {
+        Bid.find({bidprice: {$lt: range}}).sort({date:-1})
+            .then(bids => {
+                let user = req.session.info.user;
+                res.render('filters', {
+                    user,
+                    bids
+                })
+
+            })
+            .catch(err => console.log(err));
+
+
+    }
+    
+
+
+
+
 })
 
 

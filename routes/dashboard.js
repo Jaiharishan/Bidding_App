@@ -121,7 +121,11 @@ router.post('/update', (req, res) => {
                         tags,
                         biddesc
                     }
-                    saveImage(updatedItem, image)
+
+                    if(image) {
+                        saveImage(updatedItem, image)
+                    }
+                    
 
                     Bid.findOneAndUpdate({bidname: itemname}, updatedItem).then(bidd => {
     
@@ -149,6 +153,7 @@ router.post('/update', (req, res) => {
             }
             
         })
+        .catch(err => console.log(err));
     
 
 })

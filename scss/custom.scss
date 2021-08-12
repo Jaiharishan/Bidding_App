@@ -9,13 +9,17 @@ $dropdown-link-hover-color: #ffffff;
 $input-btn-focus-width: 0;
 $input-btn-focus-box-shadow: 0 0 0;
 
+
+
 input {
     transition: .2s;
 }
 
+
 input:focus {
     border:2px solid $primary;
 }
+
 
 #form {
     border:1px solid rgb(200, 200, 200);
@@ -23,13 +27,16 @@ input:focus {
     min-width:325px;
 }
 
+
 .nav-left {
     justify-content: flex-end;
 }
 
+
 .mx-6 {
     margin:0 6em;
 }
+
 
 .item-img {
     border-radius: .25em;
@@ -39,7 +46,15 @@ input:focus {
 .info {
     border-radius: .25em;
     border:1px solid rgb(220, 220, 220);
- }
+}
+
+
+.filter {
+    border: 1px solid rgb(220, 220, 220);
+    border-radius: .25rem;
+    margin:1em;
+    padding:2em;
+}
 
 
 @import '../node_modules/bootstrap/scss/bootstrap.scss';

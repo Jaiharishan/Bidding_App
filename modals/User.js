@@ -28,7 +28,7 @@ const bidSchema = new mongoose.Schema({
         required: true
     },
     bidprice: {
-        type: 'string',
+        type: Number,
         required: true
     },
     duration: {

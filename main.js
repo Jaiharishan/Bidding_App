@@ -93,17 +93,6 @@ app.use('/app/dashboard', dashboardRouter);
 io.on('connection', (socket) => {
     console.log('user at:' , socket.id);
     
-    socket.on('new-user', () => {
-
-        Bid.find({})
-        .then(bids => {
-            bids.forEach(bid => {
-                socket.join('R' + bid._id);
-            })
-        })
-        .catch(err => console.log(err));
-        
-    })
     socket.on('comment', (room, data, user) => {
         console.log(room, data);
         // we need to store the comments in the database
@@ -117,6 +106,20 @@ io.on('connection', (socket) => {
         }).catch(err => console.log(err));
 
         socket.broadcast.emit('comment', room, data, user);
+    })
+
+
+    socket.on('delete', (commentname, comment, room) => {
+        let id = room.slice(1, );
+        console.log(id, commentname, comment);
+        Bid.findOneAndUpdate({_id:id}, {
+            $pull: {
+                comments: {username: commentname, comment: comment}
+            }
+        }).then(bid => {
+            console.log('happening');
+            socket.emit('delete', commentname, comment, room);
+        }).catch(err => console.log(err));
     })
     
 })

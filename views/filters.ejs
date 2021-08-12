@@ -1,0 +1,225 @@
+<!-- navbar imported -->
+<%- include('./navbar.ejs') %>
+
+
+<div class="display-4 p-5">Filter results</div>
+
+<section class="px-sm-5 py-5">
+    <div class="container d-flex align-items-center flex-wrap">
+        <% bids.forEach((bid, index) => { %>
+            <div class="card my-3 mx-sm-3" style="width: 18rem">
+            
+                <img class="m-1 mb-0 item-img" height="200px" src="data:<%= bid.imagetype %>;charset=utf-8;base64,<%= bid.image.toString('base64') %>"
+                 class="card-img-top" alt="biditem-img" data-bs-toggle="modal" data-bs-target="#desc<%=index%>">
+        
+                
+                
+                <div class="card-body">
+                    <h5 class="card-title mb-2 fw-light"><%= bid.bidname %></h5>
+                    <p class="fw-light"> <span class="text-primary"><%= bid.owner %></span>
+                        <% let biddate = new Date(bid.date) %>
+                        <%= biddate.toLocaleString() %>
+                    </p>
+        
+                    
+                    <div class="card-text h5 mb-2"><span id="price" class=""> &#8377 <%= Number(bid.bidprice).toLocaleString() %> </span></div>
+        
+                    <% bid.tags.forEach(tag => { %>
+                        <div class="btn btn-info text-light py-1 px-3 mb-2"><%= tag %></div>
+                    <% }) %>
+        
+        
+                    <div class="d-flex align-items-center justify-content-between my-2">
+        
+                        <div class="d-flex align-items-center h6 fw-light"><i class="bi bi-people-fill mx-1"></i>bids: <span id="bids" class="mx-1"> <%= bid.bidders.length %> </span></div>
+        
+                        <div class="d-flex align-items-center h6 fw-light"><i class="bi bi-alarm-fill mx-1"></i>duration: <span id="duration" class="mx-1"> <%= bid.duration %> d</span></div>
+                    </div>
+                  
+                    <div class="d-flex align-items-center h6 fw-light"><span class="iconify" data-icon="jam:crown-f" data-inline="false"></span>Highest bidder:
+                         <span id="highest-bidder" class="mx-1 text-primary fw-bold">
+                            <% if (bid.bidders.length > 0) { %>
+                                <%= bid.bidders[bid.bidders.length - 1].username %>
+                            <% }else { %>
+                                none
+                            <% } %>
+                            
+                        </span>
+                    </div>
+        
+                    <% let today = new Date() %>
+                    <% let auction = new Date() %>
+                    
+                    
+                    <% if (today.setDate(today.getDate() + 1) > auction.setDate(biddate.getDate() + Number(bid.duration))) { %>
+                        <button type="button" class="btn btn-primary text-light w-100 mt-2" disabled data-bs-toggle="modal" data-bs-target="#bidding<%= index %>">
+                            Bidding over
+                        </button>
+                    <% }else { %>
+                        <button type="button" class="btn btn-primary text-light w-100 mt-2" data-bs-toggle="modal" data-bs-target="#bidding<%= index %>">
+                            bid now          
+                        </button>
+                    <% } %>
+                    
+                      
+                      <!-- bidding Modal -->
+                    <div class="modal fade" id="bidding<%= index %>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="staticBackdropLabel">Enter your bidding amount</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                
+                                <form action="/app" method="POST">
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label for="bid-amount" class="form-label">Your bid</label>
+                                            <input type="number" class="form-control" min="<%= Number(bid.bidprice) + 1 %>" name="bidAmount" id="bidAmount" placeholder="bid greater than <%= bid.bidprice %>">
+                                            <input type="text" value="<%= bid.bidname %>" name="itemname" style="display: none">
+                                            <input type="text" value="<%= user.username %>" name="username" style="display: none">
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary text-light px-4">Bid</button>
+                                    </div>
+                                </form>
+                                
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Modal -->
+            <div class="modal fade" id="desc<%=index%>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+                <div class="modal-dialog modal-fullscreen">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel"><%= bid.bidname %></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body py-2 px-sm-5">
+        
+        
+                            <div class="d-md-flex mt-1">
+                                <img class="m-1 mb-0 item-img m-auto" width="325px" height="250px" src="data:<%= bid.imagetype %>;charset=utf-8;base64,<%= bid.image.toString('base64') %>" class="card-img-top" alt="biditem-img">
+        
+                                <div class="d-flex flex-column w-100 px-sm-5 mt-3">
+                                    <div class="d-flex align-items-center justify-content-between w-100">
+                                        <div class="display-6"><%=bid.bidname%></div>      
+                                        <div class="display-6 text-primary">&#8377 <%= Number(bid.bidprice).toLocaleString() %></div>      
+                                    </div>
+        
+                                    <div class="mt-3" style="width:100%;height:1px;background:rgb(235, 235, 235)"></div>
+        
+                                    <div class="d-flex align-items-center justify-content-between w-100 mt-3">
+                                        <div class="h5 fw-light"><span class="d-none d-sm-inline">owner:</span> <span class="text-primary"><%= bid.owner %></span></div> 
+                                        <div class="h5 fw-light">
+                                            <%= biddate.toLocaleString() %>
+                                        </div>
+                                    </div>
+        
+                                    <div class="d-flex align-items-center justify-content-between mt-3">
+        
+                                        <div class="d-flex align-items-center h5 fw-light"><i class="bi bi-people-fill mx-2"></i>bids: <span id="bids" class="mx-1"> <%= bid.bidders.length %> </span></div>
+                
+                                        <div class="d-flex align-items-center h5 fw-light"><i class="bi bi-alarm-fill mx-2"></i>duration: <span id="duration" class="mx-2"> <%= bid.duration %> d</span></div>
+        
+                                    </div>
+        
+                                    <div class="d-flex align-items-center justify-content-between mt-3">
+        
+                                        <div class="d-flex">
+                                            <% bid.tags.forEach(tag => { %>
+                                                <div class="btn btn-info text-light py-1 px-3 mx-1"><%= tag %></div>
+                                            <% }) %>
+                                        </div>
+                                        
+        
+                                        <div class="d-flex align-items-center h5 fw-light"><span class="iconify" data-icon="jam:crown-f" data-inline="false"></span> <span class="d-none d-sm-inline">Highest bidder:</span> 
+                                            <span id="highest-bidder" class="mx-1 text-primary fw-bold">
+                                               <% if (bid.bidders.length > 0) { %>
+                                                   <%= bid.bidders[bid.bidders.length - 1].username %>
+                                               <% }else { %>
+                                                   none
+                                               <% } %>
+                                           </span>
+                                       </div>
+                                    </div>
+                                    
+        
+        
+        
+                                </div>
+        
+                            </div>
+        
+                            <p class="h4 mt-4">Item description</p>
+                            <div class="mt-2 lead px-sm-3">
+                                <%= bid.biddesc %>
+                            </div>
+        
+                            
+                            <p class="h4 mt-4">comments</p> 
+        
+                            <!-- comments -->
+                            <div class="comment d-flex flex-column px-sm-5 py-5" id="R<%= bid._id %>">
+        
+                                <!-- loading previous comments -->
+                                <% bid.comments.forEach(comment => { %>
+                                    <% if (comment.username === user.username) { %>
+        
+                                        <div class="m-1 align-self-end d-flex flex-column">
+                                            <p class="m-0 align-self-end mx-2 mb-1">
+                                                you
+                                            </p>
+        
+                                            <div class="dropdown">
+                                                <button class="m-0 btn btn-primary text-light dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <%= comment.comment %>
+                                                </button>
+                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                                    <li>
+                                                        <div class="dropdown-item update bg-light" onclick="updateComment()">update</div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="dropdown-item delete bg-light"
+                                                         onclick="deleteComment(this, this.dataset.commentname, this.dataset.comment)"
+                                                          data-commentname="<%= comment.username %>" data-comment="<%= comment.comment %>">delete</div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    <% }else { %>
+                                        <div class="m-1 align-self-start d-flex flex-column">
+                                            <p class="m-0 align-self-start mx-2 mb-1">
+                                                <%= comment.username %>
+                                            </p>
+                                            <div class="m-0 btn btn-primary text-light">
+                                                <%= comment.comment %>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% }) %>
+        
+                            </div>
+        
+                            <div class="d-flex align-items-center justify-content-center mt-3">
+                                <input type="text" class="form-control mt-2 mb-2 w-100 w-sm-75 message" id="message<%= index %>">
+                                <button class="btn btn-primary text-light px-4 mx-2 send"
+                                 onclick="createMessage(this.dataset.room, this.dataset.message);sendMessage(this.dataset.room, this.dataset.message, this.dataset.user);" data-room="R<%= bid._id %>" data-message="message<%= index %>" data-user="<%= user.username%>">send</button>
+                            </div>
+        
+                        </div>
+                        <div class="modal-footer">
+                        
+                        <button type="button" class="btn btn-primary text-light" data-bs-dismiss="modal">close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+</section>
