@@ -63,6 +63,10 @@ const bidSchema = new mongoose.Schema({
         type: 'string',
         required: true
     },
+    ratings: {
+        type: 'array',
+        required: true
+    },
     date: {
         type: Date,
         default: Date.now

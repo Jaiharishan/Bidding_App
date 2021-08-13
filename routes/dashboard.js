@@ -63,6 +63,7 @@ router.post('/create', (req, res) => {
 });
 
 
+// function to save image in database in buffer type
 function saveImage(newbid, imageEncoded) {
     if (imageEncoded == null) return
     const img = JSON.parse(imageEncoded);
@@ -100,8 +101,6 @@ router.post('/update', (req, res) => {
     const {itemname, bidname, bidprice, duration, tagsString, biddesc, image} = req.body;
 
     tags = tagsString.split(',')
-
-    
 
 
     Bid.findOne({bidname: bidname})

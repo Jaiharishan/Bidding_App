@@ -89,10 +89,13 @@ app.use('/app', appRouter);
 app.use('/app/dashboard', dashboardRouter);
 
 
+
+
 // websocket functionality
 io.on('connection', (socket) => {
     console.log('user at:' , socket.id);
     
+
     socket.on('comment', (room, data, user) => {
         console.log(room, data);
         // we need to store the comments in the database
@@ -109,6 +112,7 @@ io.on('connection', (socket) => {
     })
 
 
+    // to delete a comment
     socket.on('delete', (commentname, comment, room) => {
         let id = room.slice(1, );
         console.log(id, commentname, comment);
@@ -118,8 +122,25 @@ io.on('connection', (socket) => {
             }
         }).then(bid => {
             console.log('happening');
-            socket.emit('delete', commentname, comment, room);
+            socket.broadcast.emit('delete', commentname, comment, room);
         }).catch(err => console.log(err));
+    })
+
+
+    // for displaying current bidding amount
+    socket.on('bids', (bid, id, user) => {
+        socket.broadcast.emit('bids', bid, id, user);
+    })
+
+
+
+    // getting the rating from the user and updating it in the database
+    socket.on('ratings', (rating, id, user, item) => {
+        Bid.findOneAndUpdate({bidname: item}, {$push: {ratings: {user: user, rating: rating}}})
+            .then(bid => {
+                socket.broadcast.emit('ratings', rating, id);
+                
+            }) 
     })
     
 })

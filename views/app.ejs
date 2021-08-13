@@ -9,13 +9,11 @@
     
     <form action="/app/search" method="get">
         <div class="d-flex align-items-center justify-content-center">
-            <input type="text" name="search" id="search" style="min-width: 200" class="form-control w-50" placeholder="search by name, tags">
+            <input type="text" name="search" id="search" style="min-width: 200px" class="form-control w-50" placeholder="search by name, tags">
             <button type="submit" class="btn btn-primary text-light">Search</button>
         </div>
     </form>
         
-    
-    
 </section>
 
 
@@ -41,7 +39,7 @@
 
 
             <div class="form-check my-1">
-                <input class="form-check-input" type="checkbox" value="lowhigh" id="lowtohigh" name="lowtohigh">
+                <input class="form-check-input" type="checkbox" value="lowtohigh" id="lowtohigh" name="lowtohigh">
                 <label class="form-check-label" for="lowtohigh">
                     low to high
                 </label>
@@ -59,6 +57,8 @@
     </form>
 </section>
 
+
+
 <!-- all bidding items to public view -->
 <section class="px-sm-5 py-5">
     <div class="container">
@@ -75,13 +75,40 @@
                     
                     <div class="card-body">
                         <h5 class="card-title mb-2 fw-light"><%= bid.bidname %></h5>
-                        <p class="fw-light"> <span class="text-primary"><%= bid.owner %></span>
+                        <p class="fw-light mb-1"> <span class="text-primary"><%= bid.owner %></span>
                             <% let biddate = new Date(bid.date) %>
                             <%= biddate.toLocaleString() %>
                         </p>
     
+                        <div class="d-flex align-items-center justify-content-between m-2">
+                            <div class="card-text h5 m-0">&#8377<span id="price" class="bidAmount<%=index%>">  <%= Number(bid.bidprice).toLocaleString() %> </span></div>
+
+                            <% let allRating = 0 %>
+                                <% bid.ratings.forEach(rating => { %>
+                                    <% if (rating.rating) { %>
+                                        <% allRating += Number(rating.rating) %>
+                                    <% } %>
+                                <% }) %>
+                                
+                            <% allRating = allRating / bid.ratings.length %>
+                            <% allRating = Math.round(allRating * 10) / 10 %>
+
+                            <% if (allRating >= 4) { %>
+                                <div class="rating<%=index%>all h4 btn btn-success text-light mb-0">
+                                    <%= allRating %>/5                               
+                                </div>
+                            <% }else if (allRating > 2.5) { %>
+                                <div class="rating<%=index%>all h4 btn btn-warning text-light mb-0">                      
+                                    <%= allRating %>/5                             
+                                </div>
+                            <% }else { %>
+                                <div class="rating<%=index%>all h4 btn btn-danger text-light mb-0">
+                                    <%= allRating %>/5
+                                </div>
+                            <% } %>
+                            
+                        </div>
                         
-                        <div class="card-text h5 mb-2"><span id="price" class=""> &#8377 <%= Number(bid.bidprice).toLocaleString() %> </span></div>
     
                         <% bid.tags.forEach(tag => { %>
                             <div class="btn btn-info text-light py-1 px-3 mb-2"><%= tag %></div>
@@ -90,13 +117,13 @@
     
                         <div class="d-flex align-items-center justify-content-between my-2">
     
-                            <div class="d-flex align-items-center h6 fw-light"><i class="bi bi-people-fill mx-1"></i>bids: <span id="bids" class="mx-1"> <%= bid.bidders.length %> </span></div>
+                            <div class="d-flex align-items-center h6 fw-light"><i class="bi bi-people-fill mx-1"></i>bids: <span id="bids" class="mx-1 bidAmount<%=index%>bids"> <%= bid.bidders.length %> </span></div>
     
                             <div class="d-flex align-items-center h6 fw-light"><i class="bi bi-alarm-fill mx-1"></i>duration: <span id="duration" class="mx-1"> <%= bid.duration %> d</span></div>
                         </div>
                       
                         <div class="d-flex align-items-center h6 fw-light"><span class="iconify" data-icon="jam:crown-f" data-inline="false"></span>Highest bidder:
-                             <span id="highest-bidder" class="mx-1 text-primary fw-bold">
+                             <span id="bidAmount<%=index%>highest" class="mx-1 text-primary fw-bold">
                                 <% if (bid.bidders.length > 0) { %>
                                     <%= bid.bidders[bid.bidders.length - 1].username %>
                                 <% }else { %>
@@ -134,13 +161,12 @@
                                         <div class="modal-body">
                                             <div class="mb-3">
                                                 <label for="bid-amount" class="form-label">Your bid</label>
-                                                <input type="number" class="form-control" min="<%= Number(bid.bidprice) + 1 %>" name="bidAmount" id="bidAmount" placeholder="bid greater than <%= bid.bidprice %>">
+                                                <input type="number" class="form-control" min="<%= Number(bid.bidprice) + 1 %>" name="bidAmount" id="bidAmount<%=index%>" placeholder="bid greater than <%= bid.bidprice %>">
                                                 <input type="text" value="<%= bid.bidname %>" name="itemname" style="display: none">
-                                                <input type="text" value="<%= user.username %>" name="username" style="display: none">
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="submit" class="btn btn-primary text-light px-4">Bid</button>
+                                            <button type="submit" class="btn btn-primary text-light px-4" onclick="getBids(this.dataset.bidding, this.dataset.user)" data-user="<%=user.username%>" data-bidding="bidAmount<%=index%>">Bid</button>
                                         </div>
                                     </form>
                                     
@@ -215,12 +241,156 @@
 
                                 </div>
 
+
+                                <!-- item description -->
                                 <p class="h4 mt-4">Item description</p>
                                 <div class="mt-2 lead px-sm-3">
                                     <%= bid.biddesc %>
                                 </div>
 
                                 
+                                <!-- item ratings -->
+                                <p class="h4 mt-4">Ratings</p>
+                                <div class="mt-2 p-2">
+
+                                    <p>give a rating for this item.</p>
+                                    <div class="d-flex">
+                                        <input type="number" min="0" max="5" step="1" class="form-control w-25" name="rating" id="rating<%=index%>">
+                                        <button class="btn btn-primary text-light mx-2" onclick="getRating(this.dataset.ratingid, this.dataset.user, this.dataset.item)" data-user="<%= user.username %>"
+                                        data-item="<%=bid.bidname%>" data-ratingid="rating<%=index%>">rate</button>
+
+                                    </div>
+                                    
+                                    
+                                    <div class="allratings mt-4">
+
+                                        <div class="ratings d-flex align-items-center justify-content-center mt-1">
+                                            <div class="mx-2">5 stars</div> 
+                                            <div class="ratinggroup mb-1" style="color:gold">
+                                                <i class="bi bi-star-fill mx-1"></i><i class="bi bi-star-fill mx-1"></i><i class="bi bi-star-fill mx-1"></i><i class="bi bi-star-fill mx-1"></i><i class="bi bi-star-fill mx-1"></i>
+                                            </div>
+                                            <div class="rating<%=index%>r5 mx-2">
+                                                <% let rating5 = 0 %>
+                                                <% bid.ratings.forEach(rating => { %>
+                                                    <% if (rating.rating == 5) { %>
+                                                        <% rating5++; %>
+                                                    <% } %>
+                                                <% }) %>
+                                                <%= rating5 %>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="ratings d-flex align-items-center justify-content-center mt-1">
+                                            <div class="mx-2">4 stars</div> 
+                                            <div class="ratinggroup mb-1" style="color:gold">
+                                                <i class="bi bi-star-fill mx-1"></i><i class="bi bi-star-fill mx-1"></i><i class="bi bi-star-fill mx-1"></i><i class="bi bi-star-fill mx-1"></i><i class="bi bi-star mx-1"></i>
+                                            </div>
+                                            <div class="rating<%=index%>r4 mx-2">
+                                                <% let rating4 = 0 %>
+                                                <% bid.ratings.forEach(rating => { %>
+                                                    <% if (rating.rating == 4) { %>
+                                                        <% rating4++; %>
+                                                    <% } %>
+                                                <% }) %>
+                                                <%= rating4 %>
+                                            </div>
+                                        </div>
+                                           
+
+                                        <div class="ratings d-flex align-items-center justify-content-center mt-1">
+                                            <div class="mx-2">3 stars</div> 
+                                            <div class="ratinggroup mb-1" style="color:gold">
+                                                <i class="bi bi-star-fill mx-1"></i><i class="bi bi-star-fill mx-1"></i><i class="bi bi-star-fill mx-1"></i><i class="bi bi-star mx-1"></i><i class="bi bi-star mx-1"></i>
+                                            </div>
+                                            <div class="rating<%=index%>r3 mx-2">
+                                                <% let rating3 = 0 %>
+                                                <% bid.ratings.forEach(rating => { %>
+                                                    <% if (rating.rating == 3) { %>
+                                                        <% rating3++; %>
+                                                    <% } %>
+                                                <% }) %>
+                                                <%= rating3 %>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="ratings d-flex align-items-center justify-content-center mt-1">
+                                            <div class="mx-2">2 stars</div> 
+                                            <div class="ratinggroup mb-1" style="color:gold">
+                                                <i class="bi bi-star-fill mx-1"></i><i class="bi bi-star-fill mx-1"></i><i class="bi bi-star mx-1"></i><i class="bi bi-star mx-1"></i><i class="bi bi-star mx-1"></i>
+                                            </div>
+                                            <div class="rating<%=index%>r2 mx-2">
+                                                <% let rating2 = 0 %>
+                                                <% bid.ratings.forEach(rating => { %>
+                                                    <% if (rating.rating == 2) { %>
+                                                        <% rating2++; %>
+                                                    <% } %>
+                                                <% }) %>
+                                                <%= rating2 %>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="ratings d-flex align-items-center justify-content-center mt-1">
+                                            <div class="mx-2">1 stars</div> 
+                                            <div class="ratinggroup mb-1" style="color:gold">
+                                                <i class="bi bi-star-fill mx-1"></i><i class="bi bi-star mx-1"></i><i class="bi bi-star mx-1"></i><i class="bi bi-star mx-1"></i><i class="bi bi-star mx-1"></i>
+                                            </div>
+                                            <div class="rating<%=index%>r1 mx-2">
+                                                <% let rating1 = 0 %>
+                                                <% bid.ratings.forEach(rating => { %>
+                                                    <% if (rating.rating == 1) { %>
+                                                        <% rating1++; %>
+                                                    <% } %>
+                                                <% }) %>
+                                                <%= rating1 %>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="ratings d-flex align-items-center justify-content-center mt-1">
+                                            <div class="mx-2">0 stars</div> 
+                                            <div class="ratinggroup mb-1" style="color:gold">
+                                                <i class="bi bi-star mx-1"></i><i class="bi bi-star mx-1"></i><i class="bi bi-star mx-1"></i><i class="bi bi-star mx-1"></i><i class="bi bi-star mx-1"></i>
+                                            </div>
+                                            <div class="rating<%=index%>r0 mx-2">
+                                                <% let rating0 = 0 %>
+                                                <% bid.ratings.forEach(rating => { %>
+                                                    <% if (rating.rating == 0) { %>
+                                                        <% rating0++; %>
+                                                    <% } %>
+                                                <% }) %>
+                                                <%= rating0 %>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+
+                                    <% let avgRating =  Math.round(((5 * rating5 + 4 * rating4 + 3 * rating3 + 2 * rating2 + 1 * rating1 + 0 * rating0)/(rating0 + rating1 + rating2 + rating3 + rating4 + rating5)) * 10) / 10 %>
+
+                    
+                                    <% if (avgRating >= 4) { %>
+                                        <div class="rating<%=index%> mt-2 h4 btn btn-success text-light">
+                                            <%= avgRating %>/5
+                                        </div>
+                                    <% }else if (avgRating > 2.5) { %>
+                                        <div class="rating<%=index%> mt-2 h4 btn btn-warning text-light">
+
+                                            <%= avgRating %>/5
+                                        </div>
+                                    <% }else { %>
+                                        <div class="rating<%=index%> mt-2 h4 btn btn-danger text-light">
+                                    
+                                            <%= avgRating %>/5
+                                        </div>
+                                    <% } %>
+                                    
+                                </div>
+                                
+                                
+
+                                <!-- comments section -->
                                 <p class="h4 mt-4">comments</p> 
 
                                 <!-- comments -->
@@ -236,15 +406,15 @@
                                                 </p>
 
                                                 <div class="dropdown">
-                                                    <button class="m-0 btn btn-primary text-light dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <button class="m-0 btn btn-primary text-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
                                                         <%= comment.comment %>
                                                     </button>
-                                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                                    <ul class="dropdown-menu">
                                                         <li>
-                                                            <div class="dropdown-item update bg-light" onclick="updateComment()">update</div>
+                                                            <div class="dropdown-item update" onclick="updateComment()">update</div>
                                                         </li>
                                                         <li>
-                                                            <div class="dropdown-item delete bg-light"
+                                                            <div class="dropdown-item delete"
                                                              onclick="deleteComment(this, this.dataset.commentname, this.dataset.comment)"
                                                               data-commentname="<%= comment.username %>" data-comment="<%= comment.comment %>">delete</div>
                                                         </li>
@@ -252,7 +422,7 @@
                                                 </div>
                                             </div>
                                         <% }else { %>
-                                            <div class="m-1 align-self-start d-flex flex-column">
+                                            <div class="m-1 align-self-start d-flex flex-column" data-commentuser="<%=comment.comment%><%=comment.username%>">
                                                 <p class="m-0 align-self-start mx-2 mb-1">
                                                     <%= comment.username %>
                                                 </p>
@@ -266,15 +436,24 @@
                                 </div>
 
                                 <div class="d-flex align-items-center justify-content-center mt-3">
+
                                     <input type="text" class="form-control mt-2 mb-2 w-100 w-sm-75 message" id="message<%= index %>">
+
                                     <button class="btn btn-primary text-light px-4 mx-2 send"
-                                     onclick="createMessage(this.dataset.room, this.dataset.message);sendMessage(this.dataset.room, this.dataset.message, this.dataset.user);" data-room="R<%= bid._id %>" data-message="message<%= index %>" data-user="<%= user.username%>">send</button>
+                                    onclick="createMessage(this.dataset.room, this.dataset.message, this.dataset.user);
+                                    sendMessage(this.dataset.room, this.dataset.message, this.dataset.user);"
+                                    data-room="R<%= bid._id %>" data-message="message<%= index %>"
+                                    data-user="<%= user.username%>">
+
+                                        send
+
+                                    </button>
                                 </div>
 
                             </div>
+
                             <div class="modal-footer">
-                            
-                            <button type="button" class="btn btn-primary text-light" data-bs-dismiss="modal">close</button>
+                                <button type="button" class="btn btn-primary text-light" data-bs-dismiss="modal">close</button>
                             </div>
                         </div>
                     </div>

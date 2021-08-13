@@ -9,6 +9,8 @@ const Bid = require('../modals/User').Bid;
 router.use(express.static('public'));
 
 
+
+// function to authenticate login
 const isAuth = (req, res, next) => {
     if (req.session.auth) {
         next()
@@ -16,7 +18,6 @@ const isAuth = (req, res, next) => {
         res.redirect('/user/login')
     }
 }
-
 
 
 
@@ -38,7 +39,8 @@ router.get('/', isAuth, (req, res) => {
 })
 
 
-// GET request for user profile
+
+// GET request for dashboard
 router.get('/dashboard', isAuth, (req, res) => {
 
     let user = req.session.info.user;
@@ -55,12 +57,14 @@ router.get('/dashboard', isAuth, (req, res) => {
 })
 
 
+
 // POST router to get bids and bidders
 router.post('/', (req, res) => {
 
     // getting the updated amount itemname and the bidder name
-    const {bidAmount, itemname, username} = req.body;
+    const {bidAmount, itemname} = req.body;
 
+    let username = req.session.info.user.username;
     // now we search through the bid schema and find the item with itemname
     Bid.findOneAndUpdate({bidname: itemname},
 
@@ -83,12 +87,10 @@ router.post('/', (req, res) => {
 })
 
 
+
 // GET route for searching
 router.get('/search', (req, res) => {
-
     const {search} = req.query;
-
-    console.log(req.query);
 
     let regex = new RegExp(search, 'i');
 
@@ -115,7 +117,45 @@ router.get('/search', (req, res) => {
 router.get('/filter', (req, res) => {
 
     const {alphabet, range, lowtohigh, newest} = req.query;
-    // console.log("1"+ alphabet, "2" + range, "3" + maxbid, "4" + lowtohigh, "5" + newest)
+
+    if (alphabet && lowtohigh) {
+        Bid.find({bidprice: {$lt: range}}).collation({locale: "en" }).sort({bidname:1, bidprice:1})
+            .then(bids => {
+                let user = req.session.info.user;
+                res.render('filters', {
+                    user,
+                    bids
+                })
+                return
+            })
+            .catch(err => console.log(err));
+    }
+
+    if (lowtohigh && newest) {
+        Bid.find({bidprice: {$lt: range}}).sort({date:-1, bidprice:1})
+            .then(bids => {
+                let user = req.session.info.user;
+                res.render('filters', {
+                    user,
+                    bids
+                })
+                return
+            })
+            .catch(err => console.log(err));
+    }
+
+    if (newest && alphabet) {
+        Bid.find({bidprice: {$lt: range}}).collation({locale: "en" }).sort({bidname:1, date:-1})
+            .then(bids => {
+                let user = req.session.info.user;
+                res.render('filters', {
+                    user,
+                    bids
+                })
+                return
+            })
+            .catch(err => console.log(err));
+    }
 
 
     if(alphabet) {
@@ -126,6 +166,7 @@ router.get('/filter', (req, res) => {
                     user,
                     bids
                 })
+                return
             })
             .catch(err => console.log(err));
 
@@ -139,7 +180,7 @@ router.get('/filter', (req, res) => {
                     user,
                     bids
                 })
-
+                return
             })
             .catch(err => console.log(err));
 
@@ -153,20 +194,17 @@ router.get('/filter', (req, res) => {
                     user,
                     bids
                 })
-
+                return
             })
             .catch(err => console.log(err));
 
-
     }
-    
-
-
-
 
 })
 
 
+
+// logout functionality
 router.post('/logout', (req, res) => {
     
     req.session.destroy((err) => {
