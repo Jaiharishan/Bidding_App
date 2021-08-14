@@ -21,15 +21,15 @@
 <section class="px-sm-5 py-5">
     <div class="display-5 mx-2">filter</div>
     <form action="/app/filter" method="get">
-        <div class="d-sm-flex align-items-center justify-content-between filter flex-wrap">
+        <div class="d-flex align-items-center justify-content-between filter flex-wrap">
 
-            <div class="form-check form-switch d-flex align-items-center my-1">
+            <div class="form-check form-switch d-flex align-items-center m-1">
                 <input class="form-check-input" type="checkbox" id="alphabet" name="alphabet">
                 <label class="form-check-label mx-2" for="alphabet">A-a</label>
             </div>
 
 
-            <div class="w-25 d-flex flex-column align-items-center my-1">
+            <div class="d-flex flex-column align-items-center m-1">
                 <input type="range" name="range" class="form-range w-100 mx-2" min="0" max="1000000" step="10" id="customRange2"
                  onchange="updateTextInput(this.value)">
                  <div class="text-input mt-1">
@@ -38,21 +38,21 @@
             </div>
 
 
-            <div class="form-check my-1">
+            <div class="form-check m-1">
                 <input class="form-check-input" type="checkbox" value="lowtohigh" id="lowtohigh" name="lowtohigh">
                 <label class="form-check-label" for="lowtohigh">
                     low to high
                 </label>
             </div>
 
-            <div class="form-check my-1">
+            <div class="form-check m-1">
                 <input class="form-check-input" name="newest" type="checkbox" value="true2" id="newest">
                 <label class="form-check-label" for="newest">
                     newest
                 </label>
             </div>
             
-            <button type="submit" class="btn btn-primary text-light">Filter</button>
+            <button type="submit" class="btn btn-primary text-light m-1">Filter</button>
         </div>
     </form>
 </section>
@@ -254,7 +254,7 @@
                                 <div class="mt-2 p-2">
 
                                     <p>give a rating for this item.</p>
-                                    <div class="d-flex">
+                                    <div class="d-flex mb-2">
                                         <input type="number" min="0" max="5" step="1" class="form-control w-25" name="rating" id="rating<%=index%>">
                                         <button class="btn btn-primary text-light mx-2" onclick="getRating(this.dataset.ratingid, this.dataset.user, this.dataset.item)" data-user="<%= user.username %>"
                                         data-item="<%=bid.bidname%>" data-ratingid="rating<%=index%>">rate</button>
@@ -262,6 +262,21 @@
                                     </div>
                                     
                                     
+
+                                    <% if (allRating >= 4) { %>
+                                        <div class="rating<%=index%>all h4 btn btn-success text-light mb-0">
+                                            <%= allRating %>/5                               
+                                        </div>
+                                    <% }else if (allRating > 2.5) { %>
+                                        <div class="rating<%=index%>all h4 btn btn-warning text-light mb-0">                      
+                                            <%= allRating %>/5                             
+                                        </div>
+                                    <% }else { %>
+                                        <div class="rating<%=index%>all h4 btn btn-danger text-light mb-0">
+                                            <%= allRating %>/5
+                                        </div>
+                                    <% } %>
+
                                     <div class="allratings mt-4">
 
                                         <div class="ratings d-flex align-items-center justify-content-center mt-1">
@@ -367,24 +382,7 @@
                                         
                                     </div>
 
-                                    <% let avgRating =  Math.round(((5 * rating5 + 4 * rating4 + 3 * rating3 + 2 * rating2 + 1 * rating1 + 0 * rating0)/(rating0 + rating1 + rating2 + rating3 + rating4 + rating5)) * 10) / 10 %>
-
-                    
-                                    <% if (avgRating >= 4) { %>
-                                        <div class="rating<%=index%> mt-2 h4 btn btn-success text-light">
-                                            <%= avgRating %>/5
-                                        </div>
-                                    <% }else if (avgRating > 2.5) { %>
-                                        <div class="rating<%=index%> mt-2 h4 btn btn-warning text-light">
-
-                                            <%= avgRating %>/5
-                                        </div>
-                                    <% }else { %>
-                                        <div class="rating<%=index%> mt-2 h4 btn btn-danger text-light">
                                     
-                                            <%= avgRating %>/5
-                                        </div>
-                                    <% } %>
                                     
                                 </div>
                                 
@@ -430,7 +428,7 @@
                                             </div>
                                         <% }else { %>
 
-                                            <div class="m-1 align-self-start d-flex flex-column" data-commentuser="R<%= bid._id %><%=index%>">
+                                            <div class="m-1 align-self-start d-flex flex-column" data-commentuser="R<%=bid._id %><%=index%>">
                                                 <p class="m-0 align-self-start mx-2 mb-1">
                                                     <%= comment.username %>
                                                 </p>
@@ -446,13 +444,13 @@
                                 <!-- chatbox -->
                                 <div class="d-flex align-items-center justify-content-center mt-3">
 
-                                    <input type="text" class="form-control mt-2 mb-2 w-100 w-sm-75 message" id="message<%= index %>">
+                                    <input type="text" class="form-control mt-2 mb-2 w-100 w-sm-75 message" id="message<%=index %>">
 
                                     <button class="btn btn-primary text-light px-4 mx-2 send"
                                     onclick="createMessage(this.dataset.room, this.dataset.message, this.dataset.user);
                                     sendMessage(this.dataset.room, this.dataset.message, this.dataset.user);"
-                                    data-room="R<%= bid._id %>" data-message="message<%= index %>"
-                                    data-user="<%= user.username%>">
+                                    data-room="R<%=bid._id %>" data-message="message<%=index %>"
+                                    data-user="<%=user.username%>">
 
                                         send
 

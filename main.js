@@ -102,10 +102,10 @@ io.on('connection', (socket) => {
         let id = room.slice(1,)
         Bid.findOneAndUpdate({_id:id}, {
             $push: {
-                comments: {username: user, comment: data, index: index}
+                comments: {username: user, comment: data, num: index}
             }
         }).then(bid => {
-            console.log(bid.bidname);
+            console.log('ok');
         }).catch(err => console.log(err));
 
         socket.broadcast.emit('comment', room, data, user);
@@ -116,31 +116,38 @@ io.on('connection', (socket) => {
         let id = room.slice(1, );
         console.log(commentname, comment, index);
 
+        console.log('update happening');
         
-        Bid.findOneAndUpdate({_id:id}, {
-            $push: {
-                comments: {username: commentname, comment: updatedComment, index: index},
-                $position: index
+        Bid.findOneAndUpdate({_id:id, "comments": {username: commentname, comment: comment, num: index}}, {
+            $set: {
+                "comments.$": {username: commentname, comment: updatedComment, num: index}
             }
         }).then(bid => {
-            console.log('the new updated one is' + bid);
-            socket.broadcast.emit('update', commentname, updatedComment, comment, room, index);
+            console.log('the update');
+            
         }).catch(err => console.log(err));
+
+        socket.broadcast.emit('update', commentname, updatedComment, comment, room, index);
     })
+
+
 
     // to delete a comment
     socket.on('delete', (commentname, comment, room, index) => {
         let id = room.slice(1, );
-        console.log(id, commentname, comment);
+        console.log(commentname, comment, index, typeof index);
+
         Bid.findOneAndUpdate({_id:id}, {
             $pull: {
-                comments: {username: commentname, comment: comment, index: index}
+                comments: {username: commentname, comment: comment, num: index}
             }
         }).then(bid => {
-            console.log('happening');
-            socket.broadcast.emit('delete', commentname, comment, room, index);
+            console.log('delete happening');
         }).catch(err => console.log(err));
+
+        socket.broadcast.emit('delete', commentname, comment, room, index);
     })
+
 
 
     // for displaying current bidding amount

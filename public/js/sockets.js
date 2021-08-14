@@ -138,7 +138,7 @@ const finishUpdate = (elem) => {
     let comment = elem.dataset.comment;
 
     console.log(commentname, updatedComment, comment, parent.id, index);
-    socket.emit('update', commentname, updatedComment, comment, parent.id, index);
+    socket.emit('update', commentname, updatedComment, comment, parent.id, Number(index));
 
 }
 
@@ -166,9 +166,9 @@ const deleteComment = (elem) => {
     console.log('process done');
     
     let commentname = elem.dataset.commentname;
-    let comment = elem.dataset.comment
+    let comment = elem.dataset.comment;
     console.log(index);
-    socket.emit('delete', commentname, comment, parent.id, index)
+    socket.emit('delete', commentname, comment, parent.id, Number(index))
 }
 
 
