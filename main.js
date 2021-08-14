@@ -96,13 +96,13 @@ io.on('connection', (socket) => {
     console.log('user at:' , socket.id);
     
 
-    socket.on('comment', (room, data, user) => {
+    socket.on('comment', (room, data, user, index) => {
         console.log(room, data);
         // we need to store the comments in the database
         let id = room.slice(1,)
         Bid.findOneAndUpdate({_id:id}, {
             $push: {
-                comments: {username: user, comment: data}
+                comments: {username: user, comment: data, index: index}
             }
         }).then(bid => {
             console.log(bid.bidname);
@@ -112,17 +112,33 @@ io.on('connection', (socket) => {
     })
 
 
+    socket.on('update', (commentname, updatedComment, comment, room, index) => {
+        let id = room.slice(1, );
+        console.log(commentname, comment, index);
+
+        
+        Bid.findOneAndUpdate({_id:id}, {
+            $push: {
+                comments: {username: commentname, comment: updatedComment, index: index},
+                $position: index
+            }
+        }).then(bid => {
+            console.log('the new updated one is' + bid);
+            socket.broadcast.emit('update', commentname, updatedComment, comment, room, index);
+        }).catch(err => console.log(err));
+    })
+
     // to delete a comment
-    socket.on('delete', (commentname, comment, room) => {
+    socket.on('delete', (commentname, comment, room, index) => {
         let id = room.slice(1, );
         console.log(id, commentname, comment);
         Bid.findOneAndUpdate({_id:id}, {
             $pull: {
-                comments: {username: commentname, comment: comment}
+                comments: {username: commentname, comment: comment, index: index}
             }
         }).then(bid => {
             console.log('happening');
-            socket.broadcast.emit('delete', commentname, comment, room);
+            socket.broadcast.emit('delete', commentname, comment, room, index);
         }).catch(err => console.log(err));
     })
 

@@ -397,10 +397,10 @@
                                 <div class="comment d-flex flex-column px-sm-5 py-5" id="R<%= bid._id %>">
 
                                     <!-- loading previous comments -->
-                                    <% bid.comments.forEach(comment => { %>
+                                    <% bid.comments.forEach((comment, index) => { %>
                                         <% if (comment.username === user.username) { %>
 
-                                            <div class="m-1 align-self-end d-flex flex-column">
+                                            <div class="m-1 align-self-end d-flex flex-column" data-index="<%=index%>">
                                                 <p class="m-0 align-self-end mx-2 mb-1">
                                                     you
                                                 </p>
@@ -411,18 +411,26 @@
                                                     </button>
                                                     <ul class="dropdown-menu">
                                                         <li>
-                                                            <div class="dropdown-item update" onclick="updateComment()">update</div>
+                                                            <div class="dropdown-item update" onclick="updateComment(this)">update</div>
                                                         </li>
                                                         <li>
-                                                            <div class="dropdown-item delete"
-                                                             onclick="deleteComment(this, this.dataset.commentname, this.dataset.comment)"
-                                                              data-commentname="<%= comment.username %>" data-comment="<%= comment.comment %>">delete</div>
+                                                            <div class="dropdown-item finish" onclick="finishUpdate(this)" data-commentname="<%= comment.username %>"
+                                                                 data-comment="<%= comment.comment %>">
+                                                                finish update
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="dropdown-item delete" onclick="deleteComment(this)" data-commentname="<%= comment.username %>"
+                                                                 data-comment="<%= comment.comment %>">
+                                                                 delete
+                                                            </div>
                                                         </li>
                                                     </ul>
                                                 </div>
                                             </div>
                                         <% }else { %>
-                                            <div class="m-1 align-self-start d-flex flex-column" data-commentuser="<%=comment.comment%><%=comment.username%>">
+
+                                            <div class="m-1 align-self-start d-flex flex-column" data-commentuser="R<%= bid._id %><%=index%>">
                                                 <p class="m-0 align-self-start mx-2 mb-1">
                                                     <%= comment.username %>
                                                 </p>
@@ -435,6 +443,7 @@
 
                                 </div>
 
+                                <!-- chatbox -->
                                 <div class="d-flex align-items-center justify-content-center mt-3">
 
                                     <input type="text" class="form-control mt-2 mb-2 w-100 w-sm-75 message" id="message<%= index %>">

@@ -2,8 +2,9 @@ const socket = io('http://localhost:3001')
 socket.on('connection')
 socket.emit('new-user')
 
+
 // create the sender message
-socket.on('comment', (room, data, user) => {
+socket.on('comment', (room, data, user, index) => {
     
     let fullcomment = document.createElement('div');
     fullcomment.setAttribute('class', 'm-1 align-self-start d-flex flex-column');
@@ -19,9 +20,13 @@ socket.on('comment', (room, data, user) => {
     fullcomment.appendChild(myuser)
     fullcomment.appendChild(comment)
 
-    fullcomment.dataset.commentuser = comment.innerHTML + user;
+
     document.querySelector("#" + room).appendChild(fullcomment);
+    let countt = fullcomment.parentElement.childElementCount - 1;
+    fullcomment.dataset.commentuser = room + countt;
+    console.log(countt);
 })
+
 
 
 // to send the room and message to server
@@ -31,7 +36,9 @@ const sendMessage = (room, id, user) => {
     document.querySelector('#' + id).value = '';
     console.log(room, id, user);
 
-    socket.emit("comment", room, data, user);
+    let index = document.querySelector('#' + room).childElementCount - 1;
+    console.log(index);
+    socket.emit("comment", room, data, user, index);
 
 }
 
@@ -61,17 +68,29 @@ const createMessage = (room, id, user) => {
     let ulMenu = document.createElement('ul');
     ulMenu.setAttribute('class', 'dropdown-menu');
 
+    // update
     let liUpdate = document.createElement('li');
     let updateDiv = document.createElement('div');
     updateDiv.setAttribute('class', 'dropdown-item update');
-    updateDiv.setAttribute('onclick', 'updateComment()');
+    updateDiv.setAttribute('onclick', 'updateComment(this)');
     updateDiv.innerHTML = 'update';
     liUpdate.appendChild(updateDiv);
 
+    // finish update
+    let liFinishUpdate = document.createElement('li');
+    let finishUpdateDiv = document.createElement('div');
+    finishUpdateDiv.setAttribute('class', 'dropdown-item finish');
+    finishUpdateDiv.setAttribute('onclick', 'finishUpdate(this)');
+    finishUpdateDiv.setAttribute('data-commentname', user);
+    finishUpdateDiv.setAttribute('data-comment', commentData);
+    finishUpdateDiv.innerHTML = 'finish update';
+    liFinishUpdate.appendChild(finishUpdateDiv);
+
+    // delete
     let liDelete = document.createElement('li');
     let deleteDiv = document.createElement('div');
     deleteDiv.setAttribute('class', 'dropdown-item delete');
-    deleteDiv.setAttribute('onclick', 'deleteComment(this, this.dataset.commentname, this.dataset.comment)');
+    deleteDiv.setAttribute('onclick', 'deleteComment(this)');
     deleteDiv.setAttribute('data-commentname', user);
     deleteDiv.setAttribute('data-comment', commentData);
 
@@ -79,6 +98,7 @@ const createMessage = (room, id, user) => {
     liDelete.appendChild(deleteDiv);
 
     ulMenu.appendChild(liUpdate);
+    ulMenu.appendChild(liFinishUpdate);
     ulMenu.appendChild(liDelete);
 
     dropdownDiv.appendChild(comment);
@@ -87,47 +107,93 @@ const createMessage = (room, id, user) => {
 
     fullcomment.appendChild(myuser);
     fullcomment.appendChild(dropdownDiv);
-    // fullcomment.appendChild(mycomment)
-
 
     document.querySelector("#" + room).appendChild(fullcomment);
+    fullcomment.dataset.index = fullcomment.parentElement.childElementCount - 1;
 }
 
 
-// we need to create both update and delete functionality to our comment
-const updateComment = () => {
+
+// to enable editing to update the content
+const updateComment = (elem) => {
+    let updatingComment = elem.parentElement.parentElement.parentElement.parentElement;
+    let index = updatingComment.dataset.index;
+    updatingComment.setAttribute('contenteditable', 'true')
+    console.log(index);
+}
+
+
+
+// to send the edited content to the server
+const finishUpdate = (elem) => {
+    let updatingComment = elem.parentElement.parentElement.parentElement.parentElement;
+
+    updatingComment.setAttribute('contenteditable', 'false');
+
+    let parent = updatingComment.parentElement
+
+    let updatedComment = elem.parentElement.parentElement.parentElement.children[0].innerText;
+    let index = updatingComment.dataset.index;
+    let commentname = elem.dataset.commentname;
+    let comment = elem.dataset.comment;
+
+    console.log(commentname, updatedComment, comment, parent.id, index);
+    socket.emit('update', commentname, updatedComment, comment, parent.id, index);
 
 }
 
-const deleteComment = (elem, commentname, comment) => {
+
+
+// when server broadcasts update function
+socket.on('update', (commentname, updatedComment, comment, room, index) => {
+    let reqComment = document.querySelector(`[data-commentuser="${room + index}"]`)
+    console.log(reqComment.children[1]);
+    reqComment.children[1].textContent = updatedComment;
+    console.log(reqComment, comment + commentname + index);
+})
+
+
+
+// to delete the comment on the client side and send the same to server
+const deleteComment = (elem) => {
     console.log('process started')
     let deletingComment = elem.parentElement.parentElement.parentElement.parentElement;
-    let parent = deletingComment.parentElement
-    console.log('order is' + deletingComment.style.order);
+    let parent = deletingComment.parentElement;
+    
+    let index = deletingComment.dataset.index;
+    console.log(index);
     parent.removeChild(deletingComment);
-    console.log('process done')
-    socket.emit('delete', commentname, comment, parent.id)
+    console.log('process done');
+    
+    let commentname = elem.dataset.commentname;
+    let comment = elem.dataset.comment
+    console.log(index);
+    socket.emit('delete', commentname, comment, parent.id, index)
 }
 
-socket.on('delete', (commentname, comment, room) => {
+
+
+// get the broadcast response and deleting the same comment for all the users
+socket.on('delete', (commentname, comment, room, index) => {
+    console.log('room' + room + index);
     let parent = document.querySelector("#" + room);
-    let reqComment = document.querySelector(`[data-commentuser="${comment + commentname}"]`)
+    let reqComment = document.querySelector(`[data-commentuser="${room + index}"]`)
+    console.log(reqComment, comment + commentname + index);
     parent.removeChild(reqComment);
 
 })
 
 
-const changeBid = () => {
 
-}
-
-
+// to update the bid value in the card
 const updateTextInput = (val) => {
     let textbox = document.querySelector('.text-input');
     textbox.innerHTML = val;
 }
 
-// bidding amounts
+
+
+// to get the bidding amount and send the same to the server
 const getBids = (id, user) => {
     console.log('click happening', id);
     let bid = document.getElementById(id).value;
@@ -138,6 +204,8 @@ const getBids = (id, user) => {
 }
 
 
+
+// getting the broadcasted response and changing the bidvalue to all the users
 socket.on('bids', (bid, id, user) => {
     document.querySelector('.' + id).innerHTML = Number(bid).toLocaleString();
     let bids = document.querySelector('.' + id + 'bids');
@@ -147,7 +215,8 @@ socket.on('bids', (bid, id, user) => {
 })
 
 
-// ratings
+
+// to get the current rating an send it to the server
 const getRating = (id, user, item) => {
     console.log('click happening', id);
     let rating = document.getElementById(id).value;
@@ -211,6 +280,7 @@ const getRating = (id, user, item) => {
 
 
 
+// sends the rating to all the other users and updating avg rating
 socket.on('ratings', (rating, id) => {
 
     let display = document.querySelector('.' + id);

@@ -56,5 +56,9 @@ input:focus {
     padding:2em;
 }
 
+.btn:focus {
+    outline: none;
+}
+
 
 @import '../node_modules/bootstrap/scss/bootstrap.scss';
