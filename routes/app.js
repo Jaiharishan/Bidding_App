@@ -118,6 +118,19 @@ router.get('/filter', (req, res) => {
 
     const {alphabet, range, lowtohigh, newest} = req.query;
 
+    if (alphabet && lowhigh && newest) {
+        Bid.find({bidprice: {$lt: range}}).collation({locale: "en" }).sort({bidname:1, date:-1, bidprice:1})
+            .then(bids => {
+                let user = req.session.info.user;
+                res.render('filters', {
+                    user,
+                    bids
+                })
+                return
+            })
+            .catch(err => console.log(err));
+
+    }
     if (alphabet && lowtohigh) {
         Bid.find({bidprice: {$lt: range}}).collation({locale: "en" }).sort({bidname:1, bidprice:1})
             .then(bids => {

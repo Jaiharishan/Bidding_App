@@ -8,6 +8,8 @@
     <div class="container d-flex align-items-center justify-content-center flex-wrap">
         <% if (bids.length > 0) { %>
             <% bids.forEach((bid, index) => { %>
+
+
                 <div class="card my-3 mx-sm-3" style="width: 18rem">
 
                     <img class="m-1 mb-0 item-img" height="200px" src="data:<%= bid.imagetype %>;charset=utf-8;base64,<%= bid.image.toString('base64') %>"
@@ -17,16 +19,38 @@
                     
                     <div class="card-body">
                         <h5 class="card-title mb-2 fw-light"><%= bid.bidname %></h5>
-                        <p class="fw-light"> <span class="text-primary"><%= bid.owner %></span>
+                        <p class="fw-light mb-1"> <span class="text-primary"><%= bid.owner %></span>
                             <% let biddate = new Date(bid.date) %>
                             <%= biddate.toLocaleString() %>
                         </p>
     
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div class="card-text h5 mb-2">&#8377<span id="price" class="bidAmount<%=index%>">  <%= Number(bid.bidprice).toLocaleString() %> </span></div>
-                            <div class="rating<%=index%>all">
+                        <div class="d-flex align-items-center justify-content-between m-2">
+                            <div class="card-text h5 m-0">&#8377<span id="price" class="bidAmount<%=index%>">  <%= Number(bid.bidprice).toLocaleString() %> </span></div>
+
+                            <% let allRating = 0 %>
+                                <% bid.ratings.forEach(rating => { %>
+                                    <% if (rating.rating) { %>
+                                        <% allRating += Number(rating.rating) %>
+                                    <% } %>
+                                <% }) %>
                                 
-                            </div>
+                            <% allRating = allRating / bid.ratings.length %>
+                            <% allRating = Math.round(allRating * 10) / 10 %>
+
+                            <% if (allRating >= 4) { %>
+                                <div class="rating<%=index%>all h4 btn btn-success text-light mb-0">
+                                    <%= allRating %>/5                               
+                                </div>
+                            <% }else if (allRating > 2.5) { %>
+                                <div class="rating<%=index%>all h4 btn btn-warning text-light mb-0">                      
+                                    <%= allRating %>/5                             
+                                </div>
+                            <% }else { %>
+                                <div class="rating<%=index%>all h4 btn btn-danger text-light mb-0">
+                                    <%= allRating %>/5
+                                </div>
+                            <% } %>
+                            
                         </div>
                         
     
@@ -161,24 +185,46 @@
 
                                 </div>
 
+
+                                <!-- item description -->
                                 <p class="h4 mt-4">Item description</p>
                                 <div class="mt-2 lead px-sm-3">
                                     <%= bid.biddesc %>
                                 </div>
 
                                 
-                                <p class="h4 mt-4">Ratings</p>
+                                <!-- item ratings -->
+                                <div class="h4 mt-4 d-flex align-items-center">
+                                    <p class="mb-1">Ratings</p>
+
+                                    <% if (allRating >= 4) { %>
+                                        <div class="rating<%=index%>all h4 btn btn-success text-light mb-0 mx-5">
+                                            <%= allRating %>/5                               
+                                        </div>
+                                    <% }else if (allRating > 2.5) { %>
+                                        <div class="rating<%=index%>all h4 btn btn-warning text-light mx-5">                      
+                                            <%= allRating %>/5                             
+                                        </div>
+                                    <% }else { %>
+                                        <div class="rating<%=index%>all h4 btn btn-danger text-light mx-5">
+                                            <%= allRating %>/5
+                                        </div>
+                                    <% } %>
+                                </div>
+
+
                                 <div class="mt-2 p-2">
 
+
                                     <p>give a rating for this item.</p>
-                                    <div class="d-flex">
+                                    <div class="d-flex mb-3">
                                         <input type="number" min="0" max="5" step="1" class="form-control w-25" name="rating" id="rating<%=index%>">
                                         <button class="btn btn-primary text-light mx-2" onclick="getRating(this.dataset.ratingid, this.dataset.user, this.dataset.item)" data-user="<%= user.username %>"
                                         data-item="<%=bid.bidname%>" data-ratingid="rating<%=index%>">rate</button>
 
                                     </div>
                                     
-                                    
+
                                     <div class="allratings mt-4">
 
                                         <div class="ratings d-flex align-items-center justify-content-center mt-1">
@@ -284,45 +330,53 @@
                                         
                                     </div>
 
-                                    <div class="rating<%=index%> mt-2 h4">
-                                        <%= Math.round((5 * rating5 + 4 * rating4 + 3 * rating3 + 2 * rating2 + 1 * rating1 + 0 * rating0)/(bid.ratings.length)) %>
-                                    </div>
+                                    
                                 </div>
                                 
                                 
 
+                                <!-- comments section -->
                                 <p class="h4 mt-4">comments</p> 
 
                                 <!-- comments -->
                                 <div class="comment d-flex flex-column px-sm-5 py-5" id="R<%= bid._id %>">
 
                                     <!-- loading previous comments -->
-                                    <% bid.comments.forEach(comment => { %>
+                                    <% bid.comments.forEach((comment, index) => { %>
                                         <% if (comment.username === user.username) { %>
 
-                                            <div class="m-1 align-self-end d-flex flex-column">
+                                            <div class="m-1 align-self-end d-flex flex-column" data-index="<%=index%>">
                                                 <p class="m-0 align-self-end mx-2 mb-1">
                                                     you
                                                 </p>
 
                                                 <div class="dropdown">
-                                                    <button class="m-0 btn btn-primary text-light dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <button class="m-0 btn btn-primary text-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
                                                         <%= comment.comment %>
                                                     </button>
-                                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                                    <ul class="dropdown-menu">
                                                         <li>
-                                                            <div class="dropdown-item update bg-light" onclick="updateComment()">update</div>
+                                                            <div class="dropdown-item update" onclick="updateComment(this)">update</div>
                                                         </li>
                                                         <li>
-                                                            <div class="dropdown-item delete bg-light"
-                                                             onclick="deleteComment(this, this.dataset.commentname, this.dataset.comment)"
-                                                              data-commentname="<%= comment.username %>" data-comment="<%= comment.comment %>">delete</div>
+                                                            <div class="dropdown-item finish" onclick="finishUpdate(this)" data-commentname="<%= comment.username %>"
+                                                                 data-comment="<%= comment.comment %>">
+                                                                finish update
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="dropdown-item delete" onclick="deleteComment(this)" data-commentname="<%= comment.username %>"
+                                                                 data-comment="<%= comment.comment %>">
+                                                                 delete
+                                                            </div>
                                                         </li>
                                                     </ul>
                                                 </div>
                                             </div>
+                                            <!-- comments from the sender's side -->
                                         <% }else { %>
-                                            <div class="m-1 align-self-start d-flex flex-column">
+
+                                            <div class="m-1 align-self-start d-flex flex-column" data-commentuser="R<%=bid._id %><%=index%>">
                                                 <p class="m-0 align-self-start mx-2 mb-1">
                                                     <%= comment.username %>
                                                 </p>
@@ -335,16 +389,26 @@
 
                                 </div>
 
+                                <!-- chatbox -->
                                 <div class="d-flex align-items-center justify-content-center mt-3">
-                                    <input type="text" class="form-control mt-2 mb-2 w-100 w-sm-75 message" id="message<%= index %>">
+
+                                    <input type="text" class="form-control mt-2 mb-2 w-100 w-sm-75 message" id="message<%=index %>">
+
                                     <button class="btn btn-primary text-light px-4 mx-2 send"
-                                     onclick="createMessage(this.dataset.room, this.dataset.message);sendMessage(this.dataset.room, this.dataset.message, this.dataset.user);" data-room="R<%= bid._id %>" data-message="message<%= index %>" data-user="<%= user.username%>">send</button>
+                                    onclick="createMessage(this.dataset.room, this.dataset.message, this.dataset.user);
+                                    sendMessage(this.dataset.room, this.dataset.message, this.dataset.user);"
+                                    data-room="R<%=bid._id %>" data-message="message<%=index %>"
+                                    data-user="<%=user.username%>">
+
+                                        send
+
+                                    </button>
                                 </div>
 
                             </div>
+
                             <div class="modal-footer">
-                            
-                            <button type="button" class="btn btn-primary text-light" data-bs-dismiss="modal">close</button>
+                                <button type="button" class="btn btn-primary text-light" data-bs-dismiss="modal">close</button>
                             </div>
                         </div>
                     </div>

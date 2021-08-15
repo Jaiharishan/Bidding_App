@@ -1,6 +1,5 @@
 const socket = io('http://localhost:3001')
 socket.on('connection')
-socket.emit('new-user')
 
 
 // create the sender message
@@ -24,7 +23,6 @@ socket.on('comment', (room, data, user, index) => {
     document.querySelector("#" + room).appendChild(fullcomment);
     let countt = fullcomment.parentElement.childElementCount - 1;
     fullcomment.dataset.commentuser = room + countt;
-    console.log(countt);
 })
 
 
@@ -34,17 +32,15 @@ const sendMessage = (room, id, user) => {
     let data = document.querySelector('#' + id).value;
 
     document.querySelector('#' + id).value = '';
-    console.log(room, id, user);
 
     let index = document.querySelector('#' + room).childElementCount - 1;
-    console.log(index);
+
     socket.emit("comment", room, data, user, index);
 
 }
 
 // the message copy of the user
 const createMessage = (room, id, user) => {
-    console.log('execution works')
     let commentData = document.querySelector('#' + id).value;
 
     let fullcomment = document.createElement('div');
@@ -97,18 +93,22 @@ const createMessage = (room, id, user) => {
     deleteDiv.innerHTML = 'delete';
     liDelete.appendChild(deleteDiv);
 
+    // appending li to ul
     ulMenu.appendChild(liUpdate);
     ulMenu.appendChild(liFinishUpdate);
     ulMenu.appendChild(liDelete);
 
+    // appending comment and ul
     dropdownDiv.appendChild(comment);
     dropdownDiv.appendChild(ulMenu);
 
-
+    // appending the new comment into comments
     fullcomment.appendChild(myuser);
     fullcomment.appendChild(dropdownDiv);
 
     document.querySelector("#" + room).appendChild(fullcomment);
+
+    // setting data-index to current index value of the comments array length
     fullcomment.dataset.index = fullcomment.parentElement.childElementCount - 1;
 }
 
@@ -118,36 +118,33 @@ const createMessage = (room, id, user) => {
 const updateComment = (elem) => {
     let updatingComment = elem.parentElement.parentElement.parentElement.parentElement;
     let index = updatingComment.dataset.index;
-    updatingComment.setAttribute('contenteditable', 'true')
-    console.log(index);
+    updatingComment.setAttribute('contenteditable', 'true');
 }
 
 
 
-// to send the edited content to the server
+// to send the edited comment to the server
 const finishUpdate = (elem) => {
     let updatingComment = elem.parentElement.parentElement.parentElement.parentElement;
 
     updatingComment.setAttribute('contenteditable', 'false');
 
-    let parent = updatingComment.parentElement
+    let parent = updatingComment.parentElement;
 
     let updatedComment = elem.parentElement.parentElement.parentElement.children[0].innerText;
     let index = updatingComment.dataset.index;
     let commentname = elem.dataset.commentname;
     let comment = elem.dataset.comment;
 
-    console.log(commentname, updatedComment, comment, parent.id, index);
     socket.emit('update', commentname, updatedComment, comment, parent.id, Number(index));
 
 }
 
 
 
-// when server broadcasts update function
+// when server broadcasts update function we get the data and render it to other user
 socket.on('update', (commentname, updatedComment, comment, room, index) => {
     let reqComment = document.querySelector(`[data-commentuser="${room + index}"]`)
-    console.log(reqComment.children[1]);
     reqComment.children[1].textContent = updatedComment;
     console.log(reqComment, comment + commentname + index);
 })
@@ -156,18 +153,14 @@ socket.on('update', (commentname, updatedComment, comment, room, index) => {
 
 // to delete the comment on the client side and send the same to server
 const deleteComment = (elem) => {
-    console.log('process started')
     let deletingComment = elem.parentElement.parentElement.parentElement.parentElement;
     let parent = deletingComment.parentElement;
     
     let index = deletingComment.dataset.index;
-    console.log(index);
     parent.removeChild(deletingComment);
-    console.log('process done');
     
     let commentname = elem.dataset.commentname;
     let comment = elem.dataset.comment;
-    console.log(index);
     socket.emit('delete', commentname, comment, parent.id, Number(index))
 }
 
@@ -175,10 +168,8 @@ const deleteComment = (elem) => {
 
 // get the broadcast response and deleting the same comment for all the users
 socket.on('delete', (commentname, comment, room, index) => {
-    console.log('room' + room + index);
     let parent = document.querySelector("#" + room);
     let reqComment = document.querySelector(`[data-commentuser="${room + index}"]`)
-    console.log(reqComment, comment + commentname + index);
     parent.removeChild(reqComment);
 
 })
@@ -195,9 +186,7 @@ const updateTextInput = (val) => {
 
 // to get the bidding amount and send the same to the server
 const getBids = (id, user) => {
-    console.log('click happening', id);
     let bid = document.getElementById(id).value;
-    console.log(bid)
     socket.emit('bids', bid, id, user);
     let display = document.querySelector('.' + id);
     display.innerHTML = Number(bid).toLocaleString();
@@ -218,12 +207,11 @@ socket.on('bids', (bid, id, user) => {
 
 // to get the current rating an send it to the server
 const getRating = (id, user, item) => {
-    console.log('click happening', id);
     let rating = document.getElementById(id).value;
-    console.log(rating)
+
     socket.emit('ratings', rating, id, user, item);
-    let display = document.querySelector('.' + id);
-    let allDisplay = document.querySelector('.' + id + 'all');
+    let allDisplayDivs = document.querySelectorAll('.' + id + 'all');
+    let allDisplay = Array.from(allDisplayDivs);
 
     let r5 = document.querySelector('.' + id + 'r5');
     let r4 = document.querySelector('.' + id + 'r4');
@@ -255,27 +243,39 @@ const getRating = (id, user, item) => {
     let rat1 = Number(r1.innerHTML);
     let rat0 = Number(r0.innerHTML);
 
+
+    // calculating rating
     let avgRating = (5 * rat5 + 4 * rat4 + 3 * rat3 + 2 * rat2 + 1 * rat1 + 0 * rat0) / (rat5 + rat4 + rat3 + rat2 + rat1 + rat0);
 
+
+    // rounding it off to 1 decimal
     avgRating = Math.round(avgRating * 10) / 10;
 
     console.log(avgRating);
 
+
     if (avgRating >= 4) {
-        display.setAttribute('class', id + ' mt-2 h4 btn btn-success text-light')
-        allDisplay.setAttribute('class', id + 'all' + ' h4 btn btn-success text-light')
+        allDisplay.forEach(display => {
+            display.setAttribute('class', id + 'all' + ' mt-2 h4 btn btn-success text-light');
+        })
+        
+
     }else if (avgRating > 2.5) {
-        display.setAttribute('class', id + ' mt-2 h4 btn btn-warning text-light')
-        allDisplay.setAttribute('class', id + 'all' + ' h4 btn btn-warning text-light')
+        allDisplay.forEach(display => {
+            display.setAttribute('class', id + 'all' + ' mt-2 h4 btn btn-warning text-light');
+        })
+
     }else {
-        display.setAttribute('class', id + ' mt-2 h4 btn btn-danger text-light')
-        allDisplay.setAttribute('class', id + 'all' + ' h4 btn btn-danger text-light')
+        allDisplay.forEach(display => {
+        display.setAttribute('class', id + 'all' + ' mt-2 h4 btn btn-danger text-light');
+        })
+
     }
 
-    display.innerHTML = avgRating + '/5';
-    allDisplay.innerHTML = avgRating + '/5';
+    allDisplay.forEach(display => {
+        display.innerHTML = avgRating + '/5';
+    })
     
-    console.log(display.innerHTML, id);
 }
 
 
@@ -283,8 +283,8 @@ const getRating = (id, user, item) => {
 // sends the rating to all the other users and updating avg rating
 socket.on('ratings', (rating, id) => {
 
-    let display = document.querySelector('.' + id);
-    let allDisplay = document.querySelector('.' + id + 'all');
+    let allDisplayDivs = document.querySelector('.' + id + 'all');
+    let allDisplay = Array.from(allDisplayDivs);
     
     let r5 = document.querySelector('.' + id + 'r5');
     let r4 = document.querySelector('.' + id + 'r4');
@@ -327,18 +327,26 @@ socket.on('ratings', (rating, id) => {
 
     avgRating = Math.round(avgRating * 10) / 10;
 
+
     if (avgRating >= 4) {
-        display.setAttribute('class', id + ' mt-2 h4 btn btn-success text-light')
-        allDisplay.setAttribute('class', id + 'all' + ' mt-2 h4 btn btn-success text-light')
+        allDisplay.forEach(display => {
+            display.setAttribute('class', id + 'all' + ' mt-2 h4 btn btn-success text-light');
+        })
+        
+
     }else if (avgRating > 2.5) {
-        display.setAttribute('class', id + ' mt-2 h4 btn btn-warning text-light')
-        allDisplay.setAttribute('class', id + 'all' + ' mt-2 h4 btn btn-warning text-light')
+        allDisplay.forEach(display => {
+            display.setAttribute('class', id + 'all' + ' mt-2 h4 btn btn-warning text-light');
+        })
+
     }else {
-        display.setAttribute('class', id + ' mt-2 h4 btn btn-danger text-light')
-        allDisplay.setAttribute('class', id + 'all' + ' mt-2 h4 btn btn-danger text-light')
+        allDisplay.forEach(display => {
+        display.setAttribute('class', id + 'all' + ' mt-2 h4 btn btn-danger text-light');
+        })
+
     }
 
-    display.innerHTML = avgRating + '/5';
-    allDisplay.innerHTML = avgRating + '/5';
-    console.log(display.innerHTML);
+    allDisplay.forEach(display => {
+        display.innerHTML = avgRating + '/5';
+    })
 })

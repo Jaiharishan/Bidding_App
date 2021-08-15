@@ -6,7 +6,7 @@ const router = express.Router();
 router.use(express.static('public'));
 
 
-
+// login page will be shown first
 // GET requests
 router.get('/', (req, res) => {
     res.render('login');

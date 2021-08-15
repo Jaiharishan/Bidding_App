@@ -1,8 +1,6 @@
 const express = require('express');
 const app = express();
 
-
-
 const http = require('http');
 const server = http.createServer(app);
 const io = require('socket.io')(server, {cors: {origin: "*"}})
@@ -35,17 +33,19 @@ app.use(express.json());
 app.use(express.urlencoded({limit: '50mb', extended: false}));
 
 
+
 // to use static files like imgs css, js files
 app.use(express.static('public'));
 
 
+// to create a session stored in the database
 const store = new mongoDBSession({
     uri: dbKey,
     collection: 'allsessions',
 })
 
 
-// Express session
+// Express session and the session expires in 1h
 app.use(
     session({
         secret: 'secret',
@@ -63,13 +63,12 @@ app.use(
 app.use(flash());
 
 
+// storing flash messages globally
 app.use((req, res, next) => {
     res.locals.success_msg = req.flash('success_msg');
     res.locals.warning_msg = req.flash('warning_msg');
     next();
 });
-
-
 
 
 
@@ -91,11 +90,12 @@ app.use('/app/dashboard', dashboardRouter);
 
 
 
-// websocket functionality
+// websocket functionality for realtime updates
 io.on('connection', (socket) => {
     console.log('user at:' , socket.id);
     
 
+    // to add the new comment to the database and update the same to other users
     socket.on('comment', (room, data, user, index) => {
         console.log(room, data);
         // we need to store the comments in the database
@@ -106,17 +106,17 @@ io.on('connection', (socket) => {
             }
         }).then(bid => {
             console.log('ok');
+
         }).catch(err => console.log(err));
 
         socket.broadcast.emit('comment', room, data, user);
     })
 
 
+    
+    // to update the message for every other users and storing it in the database
     socket.on('update', (commentname, updatedComment, comment, room, index) => {
         let id = room.slice(1, );
-        console.log(commentname, comment, index);
-
-        console.log('update happening');
         
         Bid.findOneAndUpdate({_id:id, "comments": {username: commentname, comment: comment, num: index}}, {
             $set: {
@@ -135,7 +135,6 @@ io.on('connection', (socket) => {
     // to delete a comment
     socket.on('delete', (commentname, comment, room, index) => {
         let id = room.slice(1, );
-        console.log(commentname, comment, index, typeof index);
 
         Bid.findOneAndUpdate({_id:id}, {
             $pull: {
@@ -162,7 +161,6 @@ io.on('connection', (socket) => {
         Bid.findOneAndUpdate({bidname: item}, {$push: {ratings: {user: user, rating: rating}}})
             .then(bid => {
                 socket.broadcast.emit('ratings', rating, id);
-                
             }) 
     })
     

@@ -80,11 +80,9 @@ router.post('/delete', (req, res) => {
     // getting the itemname of the item to delete it
     const {itemname} = req.body;
     
-
     // now using mongodb findone and delete method we delete the item and update the page
     Bid.findOneAndDelete({bidname: itemname})
         .then(bid => {
-
             res.redirect('/app/dashboard');
             
         })
@@ -100,8 +98,7 @@ router.post('/update', (req, res) => {
     // getting all required values from the form
     const {itemname, bidname, bidprice, duration, tagsString, biddesc, image} = req.body;
 
-    tags = tagsString.split(',')
-
+    tags = tagsString.split(',');
 
     Bid.findOne({bidname: bidname})
         .then(bid => {
