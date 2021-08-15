@@ -3,6 +3,7 @@
 This is an bidding application where users create an account in this application and bid for what ever items which are in auction.
 
 Basic mode:
+
       -> This application has an public page where all items are showcased.
       -> For each user and unique dashboard is there where they can see all the details about their items and their bidding history.
 
