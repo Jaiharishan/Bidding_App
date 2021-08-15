@@ -9,6 +9,7 @@ const Bid = require('../modals/User').Bid;
 router.use(express.static('public'));
 
 
+// to authorize login
 const isAuth = (req, res, next) => {
     if (req.session.auth) {
         next()
@@ -83,8 +84,9 @@ router.post('/', (req, res) => {
 })
 
 
+
+// to give logout functionality by destroying the current session
 router.post('/logout', (req, res) => {
-    
     req.session.destroy((err) => {
         if (err) throw err;
         res.redirect('/user/login');

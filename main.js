@@ -32,13 +32,14 @@ app.use(express.urlencoded({limit: '50mb', extended: false}));
 app.use(express.static('public'));
 
 
+// to store the session in mongodb
 const store = new mongoDBSession({
     uri: dbKey,
     collection: 'allsessions',
 })
 
 
-// Express session
+// Express session with expire time of 1 hour
 app.use(
     session({
         secret: 'secret',
@@ -53,16 +54,17 @@ app.use(
 
 
 
-
 // Connect flash
 app.use(flash());
 
 
+// flash messages or stored globally
 app.use((req, res, next) => {
     res.locals.success_msg = req.flash('success_msg');
     res.locals.warning_msg = req.flash('warning_msg');
     next();
 });
+
 
 
 // importing routes

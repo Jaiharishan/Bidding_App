@@ -4,7 +4,10 @@ const router = express.Router();
 const User = require('../modals/User').User;
 const Bid = require('../modals/User').Bid;
 
+
+// to check if images is of these types
 const imageMimeTypes = ['image/jpeg', 'image/png', 'images/gif']
+
 
 // to using static files
 router.use(express.static('public'));
@@ -15,12 +18,12 @@ router.use(express.static('public'));
 
 // POST for create
 router.post('/create', (req, res) => {
-    const {bidname, bidprice, duration, tagsString, biddesc, image, username} = req.body;
+    const {bidname, bidprice, duration, tagsString, biddesc, image} = req.body;
 
     // to split the tags seperated by commas
     tags = tagsString.split(',');
 
-    let owner = username;
+    let owner = req.session.info.user.username;
 
     // creating the bidders array
     let bidders = [];
@@ -49,7 +52,6 @@ router.post('/create', (req, res) => {
                 // after saving successfully update the existing bidding details
                 newBid.save()
                     .then(bid => {
-
                         res.redirect('/app/dashboard');
 
                     })
@@ -63,6 +65,8 @@ router.post('/create', (req, res) => {
 });
 
 
+
+// to read the image data an save it in buffer format
 function saveImage(newbid, imageEncoded) {
     if (imageEncoded == null) return
     const img = JSON.parse(imageEncoded);
@@ -75,20 +79,16 @@ function saveImage(newbid, imageEncoded) {
 
 // POST for delete
 router.post('/delete', (req, res) => {
-
     // getting the itemname of the item to delete it
     const {itemname} = req.body;
     
-
     // now using mongodb findone and delete method we delete the item and update the page
     Bid.findOneAndDelete({bidname: itemname})
         .then(bid => {
-
             res.redirect('/app/dashboard');
             
         })
         .catch(err => console.log(err));
-   
 })
 
 
@@ -100,9 +100,6 @@ router.post('/update', (req, res) => {
     const {itemname, bidname, bidprice, duration, tagsString, biddesc, image} = req.body;
 
     tags = tagsString.split(',')
-
-    
-
 
     Bid.findOne({bidname: bidname})
         .then(bid => {
@@ -149,7 +146,7 @@ router.post('/update', (req, res) => {
             }
             
         })
-    
+        .catch(err=> console.log(err))
 
 })
 
