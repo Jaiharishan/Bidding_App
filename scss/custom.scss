@@ -42,4 +42,24 @@ input:focus {
  }
 
 
+// scrollbar styles
+::-webkit-scrollbar {
+    width: 8px;
+    
+}
+  
+::-webkit-scrollbar-track {
+    background: none;
+}
+  
+::-webkit-scrollbar-thumb {
+    background: #ff2b59;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #ff4970;
+}
+
+
 @import '../node_modules/bootstrap/scss/bootstrap.scss';
