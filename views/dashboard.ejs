@@ -55,6 +55,111 @@
     </div>
 </section>
 
+<% let values = [] %>
+<% let labels = [] %>
+
+<% let historyValues = [] %>
+<% let historyLabels = [] %>
+
+<% bids.forEach(bid => { %>
+    <% if (bid.owner == user.username){ %>
+        <% if (bid.bidders.length > 0) { %>
+            <% labels.push(bid.bidname) %>
+            <% values.push(bid.bidders[bid.bidders.length - 1].bidAmount) %>
+        <% } %>
+    <% } %>
+
+    <% bid.bidders.forEach(bidder => { %>
+        <% if (bidder.username == user.username) { %>
+            <% historyLabels.push(bid.bidname) %>
+            <% historyValues.push(bidder.bidAmount) %>
+        <% } %>
+    <% }) %>
+
+<% }) %>
+
+<% let valuesString = values.join() %>
+<% let labelsString = labels.join() %>
+<% let historyLabelsString = historyLabels.join() %>
+<% let historyValuesString = historyValues.join() %>
+
+
+
+<!-- charts -->
+<section class="px-sm-5 py-5">
+    <div class="container d-flex flex-wrap align-items-center justify-content-between">
+        <div class="card p-3 m-2" style="width: 500px">
+            <canvas id="revenueChart" data-values="<%=valuesString %>" data-labels="<%=labelsString %>"></canvas>
+        </div>
+        <div class="card p-3 m-2" style="width: 500px">
+            <canvas id="historyChart" data-values="<%=historyValuesString%>" data-labels="<%=historyLabelsString%>"></canvas>
+        </div>
+        
+    </div>
+</section>
+
+
+<script>
+    let revenueCanvas = document.getElementById('revenueChart');
+    let historyCanvas = document.getElementById('historyChart');
+
+    let colors = [];
+    let borderColors = [];
+
+    for(let i = 0; i < revenueCanvas.dataset.labels.split(',').length; i++) {
+        let color = Math.random() * 220 + 35 + ',' + Math.random() * 220 + 35 + ',' + Math.random() * 220 + 35 + ','
+        colors.push('rgba(' + color + '0.2)');
+        borderColors.push('rgba(' + color + '0.8)');
+    }
+
+
+    // revenue distribution chart
+    let revenueChart = new Chart(revenueCanvas,{
+        type: 'doughnut',
+        data: {
+            labels: revenueCanvas.dataset.labels.split(','),
+
+            datasets: [{
+                label: 'revenue details',
+                data: revenueCanvas.dataset.values.split(','),
+                backgroundColor: colors,
+                borderColor: borderColors,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    })
+
+
+    // bidding history chart
+    let revenueChart2 = new Chart(historyCanvas,{
+        type: 'line',
+        data: {
+            labels: historyCanvas.dataset.labels.split(','),
+
+            datasets: [{
+                label: 'bidded price',
+                data: historyCanvas.dataset.values.split(','),
+                backgroundColor: 'rgba(255, 43, 89, 0.2)',
+                borderColor: 'rgba(255, 43, 89, 0.8)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    })
+</script>
 
 
 <!-- buying and selling items -->
@@ -81,6 +186,7 @@
     <div class="display-6 mx-5">Your Items</div>
     <div class="container d-flex flex-wrap align-items-center justify-content-center mt-3">
         <% bids.forEach((bid, index) => { %>
+            <% if (bid.owner == user.username) { %>
 
             <div class="card my-2 mx-2" style="width: 18rem">
         
@@ -552,7 +658,7 @@
                 </div>
             </div>
 
-
+            <% } %>
         <% }) %>
     </div>
 </section>

@@ -196,11 +196,14 @@ const getBids = (id, user) => {
 
 // getting the broadcasted response and changing the bidvalue to all the users
 socket.on('bids', (bid, id, user) => {
+    console.log(document.querySelector('.' + id));
     document.querySelector('.' + id).innerHTML = Number(bid).toLocaleString();
     let bids = document.querySelector('.' + id + 'bids');
-    bids.innerHTML = Number(bids.innerHTML) + 1
-    let highestBidder = document.querySelector('.' + id + 'highest');
-    highestBidder.innerHTML = user
+    bids.innerHTML = Number(bids.innerHTML) + 1;
+    let highestBidder = document.querySelector('#' + id + 'highest');
+    highestBidder.innerHTML = user;
+
+    // now updating dashboard stats
 })
 
 
@@ -256,18 +259,18 @@ const getRating = (id, user, item) => {
 
     if (avgRating >= 4) {
         allDisplay.forEach(display => {
-            display.setAttribute('class', id + 'all' + ' mt-2 h4 btn btn-success text-light');
+            display.setAttribute('class', id + 'all' + ' h4 btn btn-success text-light mb-0 mx-5');
         })
         
 
     }else if (avgRating > 2.5) {
         allDisplay.forEach(display => {
-            display.setAttribute('class', id + 'all' + ' mt-2 h4 btn btn-warning text-light');
+            display.setAttribute('class', id + 'all' + ' h4 btn btn-warning text-light mb-0 mx-5');
         })
 
     }else {
         allDisplay.forEach(display => {
-        display.setAttribute('class', id + 'all' + ' mt-2 h4 btn btn-danger text-light');
+        display.setAttribute('class', id + 'all' + ' h4 btn btn-danger text-light mb-0 mx-5');
         })
 
     }

@@ -44,7 +44,7 @@ router.get('/', isAuth, (req, res) => {
 router.get('/dashboard', isAuth, (req, res) => {
 
     let user = req.session.info.user;
-    Bid.find({owner: user.username}, (error, bids) => {
+    Bid.find({}, (error, bids) => {
         if (error) {
             res.send('something went wrong')
         }
@@ -118,7 +118,7 @@ router.get('/filter', (req, res) => {
 
     const {alphabet, range, lowtohigh, newest} = req.query;
 
-    if (alphabet && lowhigh && newest) {
+    if (alphabet && lowtohigh && newest) {
         Bid.find({bidprice: {$lt: range}}).collation({locale: "en" }).sort({bidname:1, date:-1, bidprice:1})
             .then(bids => {
                 let user = req.session.info.user;
@@ -211,6 +211,18 @@ router.get('/filter', (req, res) => {
             })
             .catch(err => console.log(err));
 
+    }
+    else {
+        Bid.find({bidprice: {$lt: range}})
+            .then(bids => {
+                let user = req.session.info.user;
+                res.render('filters', {
+                    user,
+                    bids
+                })
+                return
+            })
+            .catch(err => console.log(err));
     }
 
 })
