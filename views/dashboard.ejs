@@ -67,14 +67,11 @@
             <% labels.push(bid.bidname) %>
             <% values.push(bid.bidders[bid.bidders.length - 1].bidAmount) %>
         <% } %>
+
+        <% historyValues.push(bid.date.getDate()) %>
+        <% historyLabels.push(bid.bidname) %>
     <% } %>
 
-    <% bid.bidders.forEach(bidder => { %>
-        <% if (bidder.username == user.username) { %>
-            <% historyLabels.push(bid.bidname) %>
-            <% historyValues.push(bidder.bidAmount) %>
-        <% } %>
-    <% }) %>
 
 <% }) %>
 
@@ -144,7 +141,7 @@
             labels: historyCanvas.dataset.labels.split(','),
 
             datasets: [{
-                label: 'bidded price',
+                label: 'bidded at',
                 data: historyCanvas.dataset.values.split(','),
                 backgroundColor: 'rgba(255, 43, 89, 0.2)',
                 borderColor: 'rgba(255, 43, 89, 0.8)',

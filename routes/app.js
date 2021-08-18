@@ -80,7 +80,6 @@ router.post('/', (req, res) => {
             
             res.redirect('/app');
 
-
         })
         .catch(err => console.log(err))
         
@@ -110,6 +109,7 @@ router.get('/search', (req, res) => {
                 bids
             });
         })
+        .catch(err => console.log(err));
 })
 
 

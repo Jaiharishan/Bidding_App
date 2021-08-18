@@ -1,5 +1,6 @@
-const socket = io('http://localhost:3001')
-socket.on('connection')
+const socket = io();
+
+socket.on('connection');
 
 
 // create the sender message
