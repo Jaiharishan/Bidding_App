@@ -9,6 +9,92 @@ $dropdown-link-hover-color: #ffffff;
 $input-btn-focus-width: 0;
 $input-btn-focus-box-shadow: 0 0 0;
 
+
+
+// nav-bar styles
+.navbar-light .navbar-toggler {
+    border: 0;
+    border-color: rgba(0,0,0,0);
+}
+
+.navbar-toggler:focus,
+.navbar-toggler:active,
+.navbar-toggler-icon:focus {
+    outline: none;
+    box-shadow: none;
+    border: 0;
+}
+
+.toggler-icon{
+    width: 30px;
+    height: 3px;
+    background-color: #ffffff;
+    display: block;
+    transition: all 0.2s;
+}
+
+.middle-bar{
+    margin: 5px auto;
+}
+
+.navbar-toggler {
+    .top-bar {
+        transform: rotate(45deg);
+        transform-origin: 10% 10%;
+    }
+
+    .middle-bar {
+        opacity: 0;
+        filter: alpha(opacity=0);
+    }
+
+    .bottom-bar {
+        transform: rotate(-45deg);
+        transform-origin: 10% 90%;
+    }
+    
+}
+
+.navbar-toggler.collapsed {
+    .top-bar {
+        transform: rotate(0);
+    }
+
+    .middle-bar {
+        opacity: 1;
+        filter: alpha(opacity=100);
+    }
+
+    .bottom-bar {
+        transform: rotate(0);
+    }
+
+    .toggler-icon {
+        background-color: #ffffff;
+    }
+}
+
+
+// scrollbar styles
+::-webkit-scrollbar {
+    width: 8px;
+}
+  
+::-webkit-scrollbar-track {
+    background: none;
+}
+  
+::-webkit-scrollbar-thumb {
+    background: #ff2b59;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #ff4970;
+}
+
+
+
 input {
     transition: .2s;
 }

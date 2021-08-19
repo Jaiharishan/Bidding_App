@@ -5,7 +5,8 @@ const expressLayouts = require('express-ejs-layouts');
 const session = require('express-session');
 const flash = require('connect-flash');
 const mongoose = require('mongoose');
-const mongoDBSession = require('connect-mongodb-session')(session)
+const mongoDBSession = require('connect-mongodb-session')(session);
+
 
 // importing the database key
 const dbKey = require('./auth/dbkey').mongoURI;
@@ -20,7 +21,6 @@ mongoose.connect(dbKey, {useNewUrlParser:true, useUnifiedTopology:true, useFindA
 // setting ejs and ejs layouts
 app.use(expressLayouts);
 app.set('view engine', 'ejs');
-
 
 
 // body parser
