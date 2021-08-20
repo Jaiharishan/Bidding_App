@@ -19,6 +19,7 @@ Hackermode:
     -> For selling an item in auction user should create an item and give information such as name, price, tags, image, description and duration of the auction.
 
     -> For uploading images and storing it in database Filepond is used.
+    -> For charts chartjs is used.
     -> For chatting in comments section socket.io is used to feed with live replies.
     -> Also socket.io is used to show realtime bidding prices.
     -> Ratings are also shown in realtime.
